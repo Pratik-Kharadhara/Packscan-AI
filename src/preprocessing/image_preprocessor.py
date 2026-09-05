@@ -112,4 +112,4 @@ class ImagePreprocessor:
                 return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
             if image.ndim == 3:
                 return image
-        raise ImagePreprocessingError("Image must be a non-empty file path or NumPy array.")
+        # raise ImagePreprocessingError("Image must be a non-empty file path or NumPy array")
