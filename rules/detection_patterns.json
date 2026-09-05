@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "note": "Initial OCR-detection patterns. Tune these against labelled package images without changing detector code.",
+  "fields": {
+    "mrp": {
+      "context_patterns": ["\\bmrp\\b", "max(?:imum)?\\s+retail\\s+price", "\\bretail\\s+price\\b"],
+      "value_pattern": "(?:₹|rs\\.?|inr)\\s*\\d+(?:[.,]\\d{1,2})?"
+    },
+    "net_quantity": {
+      "context_patterns": ["\\bnet\\s*(?:qty|quantity|wt|weight)?\\b"],
+      "value_pattern": "\\b\\d+(?:[.,]\\d+)?\\s*(?:mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?)\\b"
+    },
+    "manufacture_date": {
+      "context_patterns": ["\\bmfg\\b", "\\bmfd\\b", "manufactured", "\\bpkd\\b", "packed", "packaging"],
+      "value_pattern": "(?:\\b\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}\\b|\\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*[ ./-]+\\d{2,4}\\b|\\b\\d{1,2}[ ./-]+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*[ .,-]+\\d{2,4}\\b)",
+      "year_month_pattern": "\\b(?:0?[1-9]|1[0-2])[/-]\\d{2,4}\\b"
+    },
+    "manufacturer_packer": {
+      "context_patterns": ["manufactured\\s+by", "packed\\s+by", "marketed\\s+by", "imported\\s+by", "\\bmanufacturer\\b", "\\bpacker\\b", "\\bimporter\\b"]
+    },
+    "consumer_contact": {
+      "context_patterns": ["customer\\s+care", "consumer\\s+care", "complaints?", "helpline", "contact\\s+us"],
+      "phone_pattern": "(?<!\\d)(?:\\+91[- ]?)?[6-9]\\d{9}(?!\\d)",
+      "email_pattern": "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}"
+    },
+    "product_identity": {
+      "context_patterns": ["product\\s*(?:name)?", "commodity", "item\\s*(?:name)?"]
+    }
+  }
+}

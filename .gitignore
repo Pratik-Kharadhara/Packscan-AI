@@ -1,0 +1,42 @@
+# Python environments and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Test and tooling artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Generated application data
+/data/raw/*
+!/data/raw/.gitkeep
+/data/processed/*
+!/data/processed/.gitkeep
+/data/annotated/*
+!/data/annotated/.gitkeep
+/data/sample_data/*
+!/data/sample_data/.gitkeep
+/storage/database/*
+!/storage/database/.gitkeep
+/storage/reports/*
+!/storage/reports/.gitkeep
+/storage/ocr_models/
+*.db
+*.sqlite
+*.sqlite3
+*.pdf
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "profile_name": "Initial packaged-commodity screening profile",
+  "note": "This is a configurable first-level screening profile, not a substitute for legal inspection. Applicability and exceptions must be selected by product context in a future phase.",
+  "fields": {
+    "product_identity": {
+      "required": true,
+      "minimum_confidence": 0.7,
+      "value_pattern": ".+",
+      "missing_status": "REVIEW"
+    },
+    "manufacturer_packer": {
+      "required": true,
+      "minimum_confidence": 0.7,
+      "value_pattern": ".+",
+      "missing_status": "REVIEW"
+    },
+    "net_quantity": {
+      "required": true,
+      "minimum_confidence": 0.7,
+      "value_pattern": "^\\d+(?:[.,]\\d+)?\\s*(?:mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?)$",
+      "missing_status": "REVIEW"
+    },
+    "manufacture_date": {
+      "required": true,
+      "minimum_confidence": 0.7,
+      "value_pattern": ".+",
+      "missing_status": "REVIEW"
+    },
+    "mrp": {
+      "required": true,
+      "minimum_confidence": 0.7,
+      "value_pattern": "^(?:₹|rs\\.?|inr)\\s*\\d+(?:[.,]\\d{1,2})?$",
+      "missing_status": "REVIEW"
+    },
+    "consumer_contact": {
+      "required": true,
+      "minimum_confidence": 0.7,
+      "value_pattern": "(?:[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}|(?:\\+91[- ]?)?[6-9]\\d{9})",
+      "missing_status": "REVIEW"
+    }
+  }
+}

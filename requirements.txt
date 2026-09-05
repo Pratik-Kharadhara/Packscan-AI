@@ -1,0 +1,8 @@
+# Foundation and OCR proof-of-concept dependencies
+streamlit>=1.38,<2
+easyocr>=1.7,<2
+opencv-python>=4.10,<5
+numpy>=1.26,<3
+Pillow>=10,<12
+pydantic>=2.8,<3
+pytest>=8,<9
