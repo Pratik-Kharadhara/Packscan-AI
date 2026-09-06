@@ -44,3 +44,15 @@ def test_pipeline_returns_complete_compliant_result_from_structured_ocr() -> Non
     assert result.preprocessing.operations == ["grayscale", "clahe_contrast"]
     assert result.ocr.detections[0].text == "Product: Apricot Scrub"
     assert result.processing_warnings == []
+
+
+def test_pipeline_annotate_result() -> None:
+    image = np.full((700, 800, 3), 127, dtype=np.uint8)
+    image[300:305, :] = 0
+
+    pipeline = AnalysisPipeline(ocr_service=OCRService(reader=FakeReader()))
+    result = pipeline.analyze_package(image)
+    annotated = pipeline.annotate_result(result, original_image=image)
+
+    assert isinstance(annotated, np.ndarray)
+    assert annotated.shape == (700, 800, 3)

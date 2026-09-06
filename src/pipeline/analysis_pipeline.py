@@ -97,8 +97,28 @@ class AnalysisPipeline:
             processing_warnings=processing_warnings,
         )
 
+    def annotate_result(
+        self,
+        result: PackageAnalysisResult,
+        original_image: ImageInput | None = None,
+    ) -> np.ndarray:
+        """Render highlighted visual evidence for a completed analysis result."""
+
+        from src.annotation.image_annotator import ImageAnnotator
+
+        return ImageAnnotator().annotate_package_result(result, original_image=original_image)
+
 
 def analyze_package(image: ImageInput) -> PackageAnalysisResult:
-    """Convenience function for scripts and the future Streamlit application."""
+    """Convenience function for scripts and the Streamlit application."""
 
     return AnalysisPipeline().analyze_package(image)
+
+
+def annotate_result(
+    result: PackageAnalysisResult,
+    original_image: ImageInput | None = None,
+) -> np.ndarray:
+    """Convenience function to generate an annotated image for an analysis result."""
+
+    return AnalysisPipeline().annotate_result(result, original_image=original_image)
