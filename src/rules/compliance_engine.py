@@ -30,11 +30,14 @@ class OverallStatus(StrEnum):
 
 
 class ComplianceCheck(BaseModel):
-    """One explainable field-level screening outcome."""
+    """One explainable field-level screening outcome grounded in statutory rules."""
 
     field: str
     status: CheckStatus
     reason: str
+    rule_reference: str | None = None
+    evidence: str | None = None
+    sub_fields: dict[str, str] = Field(default_factory=dict)
 
 
 class ComplianceResult(BaseModel):
@@ -69,12 +72,14 @@ class ComplianceEngine:
             )
 
         for field_name, rule in self._rules.fields.items():
+            ref = getattr(rule, "rule_reference", None)
             if not rule.required:
                 checks.append(
                     ComplianceCheck(
                         field=field_name,
                         status=CheckStatus.NOT_APPLICABLE,
                         reason="This declaration is not required by the active screening profile.",
+                        rule_reference=ref,
                     )
                 )
                 continue
@@ -95,43 +100,85 @@ class ComplianceEngine:
         detected: DetectedField | None,
         image_usable: bool,
     ) -> ComplianceCheck:
-        # Rule's concrete type is intentionally consumed through its configured attributes.
+        ref = getattr(rule, "rule_reference", None) or (detected.rule_reference if detected else None)
+        sub_fields = detected.sub_fields if detected else {}
+        evidence = detected.matched_text or detected.raw_text if detected else None
+
         if not image_usable:
             return ComplianceCheck(
                 field=field_name,
                 status=CheckStatus.REVIEW,
                 reason="Image quality is insufficient for a reliable automated field conclusion.",
+                rule_reference=ref,
+                evidence=evidence,
+                sub_fields=sub_fields,
             )
+
         if detected is None or not detected.found:
             status = CheckStatus(getattr(rule, "missing_status"))
+            prefix = f"{ref}: " if ref else ""
             return ComplianceCheck(
                 field=field_name,
                 status=status,
                 reason=(
-                    "No reliable declaration was detected. Manual verification is required."
+                    f"{prefix}No reliable declaration detected on scanned panel. Manual verification recommended."
                     if status is CheckStatus.REVIEW
-                    else "Required declaration was reliably determined to be absent."
+                    else f"{prefix}Required declaration determined to be absent from scanned panel."
                 ),
+                rule_reference=ref,
+                evidence=evidence,
+                sub_fields=sub_fields,
             )
+
+        # Handle semantic date separation: only expiry date detected when mfg/pkg date is required (Rule 6(1)(d))
+        if field_name == "manufacture_date" and sub_fields.get("date_type") == "expiry_only":
+            return ComplianceCheck(
+                field=field_name,
+                status=CheckStatus.REVIEW,
+                reason=f"{ref or 'Rule 6(1)(d)'}: Expiry date detected ({detected.value}), but mandatory month & year of manufacture/pre-packing is missing.",
+                rule_reference=ref,
+                evidence=evidence,
+                sub_fields=sub_fields,
+            )
+
         if detected.confidence is None or detected.confidence < getattr(rule, "minimum_confidence"):
+            prefix = f"{ref}: " if ref else ""
             return ComplianceCheck(
                 field=field_name,
                 status=CheckStatus.REVIEW,
                 reason=(
-                    f"Declaration detected with confidence {detected.confidence or 0:.2f}, below "
-                    f"the configured minimum of {getattr(rule, 'minimum_confidence'):.2f}."
+                    f"{prefix}Declaration detected with confidence {detected.confidence or 0:.2f}, below "
+                    f"configured threshold of {getattr(rule, 'minimum_confidence'):.2f}."
                 ),
+                rule_reference=ref,
+                evidence=evidence,
+                sub_fields=sub_fields,
             )
+
         if not detected.value or not re.fullmatch(getattr(rule, "value_pattern"), detected.value, re.IGNORECASE):
+            prefix = f"{ref}: " if ref else ""
             return ComplianceCheck(
                 field=field_name,
                 status=CheckStatus.FAIL,
-                reason="Detected declaration does not match the configured required format.",
+                reason=f"{prefix}Detected declaration '{detected.value}' does not conform to statutory required format.",
+                rule_reference=ref,
+                evidence=evidence,
+                sub_fields=sub_fields,
             )
+
+        # Field passed verification
+        prefix = f"{ref}: " if ref else ""
+        reason = f"{prefix}Compliant declaration detected: {detected.value}."
+        if detected.notes:
+            reason += f" ({detected.notes[0]})"
+
         return ComplianceCheck(
             field=field_name,
             status=CheckStatus.PASS,
-            reason=f"Declaration detected: {detected.value}",
+            reason=reason,
+            rule_reference=ref,
+            evidence=evidence,
+            sub_fields=sub_fields,
         )
 
     @staticmethod

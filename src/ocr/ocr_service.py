@@ -6,10 +6,12 @@ from pathlib import Path
 from typing import Any, Protocol, TypeAlias
 
 import numpy as np
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
+from src.ocr.ocr_normalizer import NormalizedDetection, normalize_detections
+from src.ocr.ocr_types import OCRDetection, Point
+from src.ocr.spatial_grouping import GroupedLine, SpatialGrouper
 
-Point: TypeAlias = tuple[float, float]
 ImageInput: TypeAlias = str | Path | np.ndarray
 
 
@@ -17,31 +19,33 @@ class OCRServiceError(RuntimeError):
     """Raised when OCR cannot be performed on the supplied image."""
 
 
-class OCRDetection(BaseModel):
-    """One text region reported by the OCR engine."""
-
-    text: str = Field(min_length=1)
-    confidence: float = Field(ge=0.0, le=1.0)
-    bounding_box: tuple[Point, Point, Point, Point]
-
-    @field_validator("bounding_box")
-    @classmethod
-    def validate_box_has_area(cls, box: tuple[Point, Point, Point, Point]) -> tuple[Point, Point, Point, Point]:
-        if len(box) != 4:
-            raise ValueError("An OCR bounding box must contain exactly four points.")
-        return box
-
-
 class OCRResult(BaseModel):
-    """Engine-neutral OCR result for downstream preprocessing and detection modules."""
+    """Engine-neutral OCR result enriched with normalized and spatially grouped lines."""
 
     detections: list[OCRDetection]
+    normalized_detections: list[NormalizedDetection] = Field(default_factory=list)
+    grouped_lines: list[GroupedLine] = Field(default_factory=list)
+    stacked_lines: list[GroupedLine] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def populate_spatial_groups_if_needed(self) -> "OCRResult":
+        if self.detections and not self.normalized_detections:
+            self.normalized_detections = normalize_detections(self.detections)
+        if self.normalized_detections and not self.grouped_lines:
+            grouper = SpatialGrouper()
+            self.grouped_lines = grouper.group_lines(self.normalized_detections)
+            self.stacked_lines = grouper.generate_stacked_pairs(self.grouped_lines)
+        return self
 
     @property
     def full_text(self) -> str:
         """Return detected text in EasyOCR reading order."""
-
         return "\n".join(detection.text for detection in self.detections)
+
+    @property
+    def lines_text(self) -> list[str]:
+        """Return text of spatially grouped lines."""
+        return [line.text for line in self.grouped_lines]
 
 
 class EasyOCRReader(Protocol):
