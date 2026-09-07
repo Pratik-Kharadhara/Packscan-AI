@@ -19,6 +19,8 @@ class FieldRule(BaseModel):
     minimum_confidence: float = Field(ge=0.0, le=1.0)
     value_pattern: str
     missing_status: Literal["REVIEW", "FAIL"] = "REVIEW"
+    rule_reference: str | None = None
+    legal_name: str | None = None
 
 
 class ComplianceRules(BaseModel):

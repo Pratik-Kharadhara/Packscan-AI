@@ -1,43 +1,55 @@
 {
-  "version": "1.0",
-  "profile_name": "Initial packaged-commodity screening profile",
-  "note": "This is a configurable first-level screening profile, not a substitute for legal inspection. Applicability and exceptions must be selected by product context in a future phase.",
+  "version": "2.0",
+  "profile_name": "Packaged Commodities Legal Metrology Screening Profile (Rules 2011)",
+  "note": "Decision-support first-level screening profile implementing Rules 6, 7, 8, 9, 10, 13 of The Legal Metrology (Packaged Commodities) Rules, 2011.",
   "fields": {
     "product_identity": {
       "required": true,
-      "minimum_confidence": 0.7,
+      "minimum_confidence": 0.65,
       "value_pattern": ".+",
-      "missing_status": "REVIEW"
+      "missing_status": "REVIEW",
+      "rule_reference": "Rule 6(1)(b)",
+      "legal_name": "Common or Generic Name of Commodity"
     },
     "manufacturer_packer": {
       "required": true,
-      "minimum_confidence": 0.7,
+      "minimum_confidence": 0.65,
       "value_pattern": ".+",
-      "missing_status": "REVIEW"
+      "missing_status": "REVIEW",
+      "rule_reference": "Rule 6(1)(a) & Rule 10",
+      "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer"
     },
     "net_quantity": {
       "required": true,
-      "minimum_confidence": 0.7,
-      "value_pattern": "^\\d+(?:[.,]\\d+)?\\s*(?:mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?)$",
-      "missing_status": "REVIEW"
+      "minimum_confidence": 0.65,
+      "value_pattern": "^\\d+(?:[.,]\\d+)?\\s*(?:mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?|n|u)$",
+      "missing_status": "REVIEW",
+      "rule_reference": "Rule 6(1)(c) & Rule 13",
+      "legal_name": "Net Quantity in Standard Metric Units"
     },
     "manufacture_date": {
       "required": true,
-      "minimum_confidence": 0.7,
+      "minimum_confidence": 0.65,
       "value_pattern": ".+",
-      "missing_status": "REVIEW"
+      "missing_status": "REVIEW",
+      "rule_reference": "Rule 6(1)(d)",
+      "legal_name": "Month and Year of Manufacture / Pre-packing"
     },
     "mrp": {
       "required": true,
-      "minimum_confidence": 0.7,
+      "minimum_confidence": 0.65,
       "value_pattern": "^(?:₹|rs\\.?|inr)\\s*\\d+(?:[.,]\\d{1,2})?$",
-      "missing_status": "REVIEW"
+      "missing_status": "REVIEW",
+      "rule_reference": "Rule 6(1)(e) & Rule 3(m)",
+      "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes"
     },
     "consumer_contact": {
       "required": true,
-      "minimum_confidence": 0.7,
-      "value_pattern": "(?:[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}|(?:\\+91[- ]?)?[6-9]\\d{9})",
-      "missing_status": "REVIEW"
+      "minimum_confidence": 0.65,
+      "value_pattern": "(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|(?:\\+91[- ]?)?[6-9]\\d{9}|1800[- ]?\\d{3,4}[- ]?\\d{3,4})",
+      "missing_status": "REVIEW",
+      "rule_reference": "Rule 6(2)",
+      "legal_name": "Consumer Care / Grievance Contact Details"
     }
   }
 }

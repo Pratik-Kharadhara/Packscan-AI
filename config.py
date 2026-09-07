@@ -33,9 +33,15 @@ DEFAULT_MIN_OCR_CONFIDENCE = 0.70
 OCR_LANGUAGES = ("en",)
 USE_GPU_FOR_OCR = False
 
-# Initial image-quality and preprocessing values. These are deliberately easy to
-# tune after reviewing the supplied package-photo set.
-MIN_BLUR_SCORE = 80.0
+# Calibrated image-quality and preprocessing thresholds.
+# Hard thresholds cause hard rejection (usable=False).
+# Soft thresholds generate advisory warnings without blocking OCR.
+HARD_MIN_BLUR_SCORE = 15.0
+SOFT_BLUR_WARNING_THRESHOLD = 70.0
+MIN_BLUR_SCORE = HARD_MIN_BLUR_SCORE
+
+HARD_MIN_BRIGHTNESS_SCORE = 20.0
+HARD_MAX_BRIGHTNESS_SCORE = 245.0
 MIN_BRIGHTNESS_SCORE = 40.0
 MAX_BRIGHTNESS_SCORE = 220.0
 MAX_PREPROCESS_DIMENSION = 1600

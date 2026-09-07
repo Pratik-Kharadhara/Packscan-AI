@@ -13,17 +13,32 @@ def detected_field(
     detection: OCRDetection,
     value: str,
     note: str,
+    *,
+    raw_text: str | None = None,
+    normalized_text: str | None = None,
+    matched_pattern: str | None = None,
+    role: str | None = None,
+    sub_fields: dict[str, str] | None = None,
+    rule_reference: str | None = None,
+    bounding_boxes: list[tuple[Point, Point, Point, Point]] | None = None,
 ) -> DetectedField:
-    """Build a single-line evidence candidate from one OCR region."""
+    """Build a rich evidence candidate from OCR regions retaining provenance."""
 
+    boxes = bounding_boxes if bounding_boxes is not None else [detection.bounding_box]
     return DetectedField(
         field=field,
         found=True,
         value=value,
         matched_text=detection.text,
         confidence=detection.confidence,
-        bounding_boxes=[detection.bounding_box],
+        bounding_boxes=boxes,
         notes=[note],
+        raw_text=raw_text or detection.text,
+        normalized_text=normalized_text or detection.text,
+        matched_pattern=matched_pattern,
+        role=role,
+        sub_fields=sub_fields or {},
+        rule_reference=rule_reference,
     )
 
 

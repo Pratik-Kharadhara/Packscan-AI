@@ -1,30 +1,104 @@
 {
-  "version": "1.0",
-  "note": "Initial OCR-detection patterns. Tune these against labelled package images without changing detector code.",
+  "version": "2.0",
+  "note": "Calibrated Legal Metrology detection patterns aligned with Rules 2011, spatial grouping, and OCR artifacts.",
   "fields": {
     "mrp": {
-      "context_patterns": ["\\bmrp\\b", "max(?:imum)?\\s+retail\\s+price", "\\bretail\\s+price\\b"],
-      "value_pattern": "(?:₹|rs\\.?|inr)\\s*\\d+(?:[.,]\\d{1,2})?"
+      "context_patterns": [
+        "\\bmrp\\b",
+        "max(?:imum)?\\s+retail\\s+price",
+        "\\bretail\\s+price\\b"
+      ],
+      "value_pattern": "(?:(?:mrp|max(?:imum)?\\s*retail\\s*price|retail\\s*price)[^0-9\\n]{0,10})?(?:[₹\\?]|rs\\.?|inr)?\\s*(\\d+(?:[.,]\\d{1,2})?)",
+      "tax_pattern": "\\b(?:incl[;:,.]*|inclusive)\\s*(?:of)?\\s*all\\s*taxes\\b"
     },
     "net_quantity": {
-      "context_patterns": ["\\bnet\\s*(?:qty|quantity|wt|weight)?\\b"],
-      "value_pattern": "\\b\\d+(?:[.,]\\d+)?\\s*(?:mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?)\\b"
+      "context_patterns": [
+        "\\bnet\\s*(?:qty|quantity|wt|weight)?\\b"
+      ],
+      "value_pattern": "\\b(\\d+(?:[.,]\\d+)?)\\s*(mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?|n|u)\\b",
+      "when_packed_pattern": "\\bwhen\\s+packed\\b"
     },
     "manufacture_date": {
-      "context_patterns": ["\\bmfg\\b", "\\bmfd\\b", "manufactured", "\\bpkd\\b", "packed", "packaging"],
-      "value_pattern": "(?:\\b\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}\\b|\\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*[ ./-]+\\d{2,4}\\b|\\b\\d{1,2}[ ./-]+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*[ .,-]+\\d{2,4}\\b)",
-      "year_month_pattern": "\\b(?:0?[1-9]|1[0-2])[/-]\\d{2,4}\\b"
+      "mfg_context_patterns": [
+        "\\bdate\\s*of\\s*mfg\\b",
+        "\\bmfg\\b",
+        "\\bmfd\\b",
+        "\\bmanufactured\\b",
+        "\\bdate\\s*of\\s*packaging\\b",
+        "\\bpkd\\b",
+        "\\bpacked\\b",
+        "\\bpackaging\\b"
+      ],
+      "expiry_context_patterns": [
+        "\\buse\\s*before\\b",
+        "\\buse\\s*by\\b",
+        "\\bbest\\s*before\\b",
+        "\\bexpiry\\b",
+        "\\bexp\\b"
+      ],
+      "value_pattern": "(?:\\b\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}\\b|\\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*[ ./-]+\\d{2,4}\\b|\\b\\d{1,2}[ ./-]+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*[ .,-]+\\d{2,4}\\b|\\b(?:0?[1-9]|1[0-2])[/-]\\d{2,4}\\b)"
     },
     "manufacturer_packer": {
-      "context_patterns": ["manufactured\\s+by", "packed\\s+by", "marketed\\s+by", "imported\\s+by", "\\bmanufacturer\\b", "\\bpacker\\b", "\\bimporter\\b"]
+      "marketer_patterns": [
+        "\\bmkt\\s*[.;:,]*\\s*by\\b",
+        "\\bmarketed\\s*by\\b"
+      ],
+      "manufacturer_patterns": [
+        "\\bmfg\\s*[.;:,]*\\s*by\\b",
+        "\\bmanufactured\\s*by\\b",
+        "\\bmanufacturer\\b"
+      ],
+      "packer_patterns": [
+        "\\bpacked\\s*by\\b",
+        "\\bpkd\\s*[.;:,]*\\s*by\\b",
+        "\\bpacker\\b"
+      ],
+      "importer_patterns": [
+        "\\bimported\\s*by\\b",
+        "\\bimporter\\b"
+      ],
+      "pin_code_pattern": "\\b[1-9]\\d{2}\\s?\\d{3}\\b"
     },
     "consumer_contact": {
-      "context_patterns": ["customer\\s+care", "consumer\\s+care", "complaints?", "helpline", "contact\\s+us"],
+      "context_patterns": [
+        "customer\\s*care",
+        "consumer\\s*care",
+        "complaints?",
+        "helpline",
+        "contact\\s*us",
+        "feedback",
+        "toll\\s*free"
+      ],
+      "toll_free_pattern": "\\b1800[- ]?\\d{3,4}[- ]?\\d{3,4}\\b",
       "phone_pattern": "(?<!\\d)(?:\\+91[- ]?)?[6-9]\\d{9}(?!\\d)",
-      "email_pattern": "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}"
+      "email_pattern": "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
     },
     "product_identity": {
-      "context_patterns": ["product\\s*(?:name)?", "commodity", "item\\s*(?:name)?"]
+      "context_patterns": [
+        "product\\s*(?:name)?",
+        "commodity",
+        "item\\s*(?:name)?"
+      ],
+      "common_commodities": [
+        "salt",
+        "edible common salt",
+        "iodised salt",
+        "vacuum evaporated edible common salt",
+        "tea",
+        "coffee",
+        "biscuit",
+        "biscuits",
+        "soap",
+        "shampoo",
+        "detergent",
+        "atta",
+        "flour",
+        "rice",
+        "oil",
+        "edible oil",
+        "scrub",
+        "face wash"
+      ]
     }
   }
 }

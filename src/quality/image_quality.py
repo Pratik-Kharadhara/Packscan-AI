@@ -10,11 +10,14 @@ import numpy as np
 from pydantic import BaseModel, Field
 
 from config import (
+    HARD_MAX_BRIGHTNESS_SCORE,
+    HARD_MIN_BLUR_SCORE,
+    HARD_MIN_BRIGHTNESS_SCORE,
     MAX_BRIGHTNESS_SCORE,
-    MIN_BLUR_SCORE,
     MIN_BRIGHTNESS_SCORE,
     MIN_IMAGE_HEIGHT,
     MIN_IMAGE_WIDTH,
+    SOFT_BLUR_WARNING_THRESHOLD,
 )
 
 
@@ -49,15 +52,21 @@ class ImageQualityAssessor:
         self,
         min_width: int = MIN_IMAGE_WIDTH,
         min_height: int = MIN_IMAGE_HEIGHT,
-        min_blur_score: float = MIN_BLUR_SCORE,
-        min_brightness_score: float = MIN_BRIGHTNESS_SCORE,
-        max_brightness_score: float = MAX_BRIGHTNESS_SCORE,
+        hard_min_blur: float = HARD_MIN_BLUR_SCORE,
+        soft_min_blur: float = SOFT_BLUR_WARNING_THRESHOLD,
+        hard_min_brightness: float = HARD_MIN_BRIGHTNESS_SCORE,
+        hard_max_brightness: float = HARD_MAX_BRIGHTNESS_SCORE,
+        soft_min_brightness: float = MIN_BRIGHTNESS_SCORE,
+        soft_max_brightness: float = MAX_BRIGHTNESS_SCORE,
     ) -> None:
         self._min_width = min_width
         self._min_height = min_height
-        self._min_blur_score = min_blur_score
-        self._min_brightness_score = min_brightness_score
-        self._max_brightness_score = max_brightness_score
+        self._hard_min_blur = hard_min_blur
+        self._soft_min_blur = soft_min_blur
+        self._hard_min_brightness = hard_min_brightness
+        self._hard_max_brightness = hard_max_brightness
+        self._soft_min_brightness = soft_min_brightness
+        self._soft_max_brightness = soft_max_brightness
 
     def assess(self, image: ImageInput) -> ImageQualityResult:
         """Measure resolution, focus, and average brightness for one image."""
@@ -68,22 +77,39 @@ class ImageQualityAssessor:
         blur_score = float(cv2.Laplacian(grayscale, cv2.CV_64F).var())
         brightness_score = float(grayscale.mean())
 
-        issues: list[str] = []
+        hard_issues: list[str] = []
+        soft_warnings: list[str] = []
+
         if width < self._min_width or height < self._min_height:
-            issues.append(
+            hard_issues.append(
                 f"Image resolution is too low ({width}x{height}); "
-                f"minimum is {self._min_width}x{self._min_height}."
+                f"minimum required is {self._min_width}x{self._min_height}."
             )
-        if blur_score < self._min_blur_score:
-            issues.append("Image is too blurry for reliable OCR.")
-        if brightness_score < self._min_brightness_score:
-            issues.append("Image is too dark for reliable OCR.")
-        elif brightness_score > self._max_brightness_score:
-            issues.append("Image is overexposed and may contain glare.")
+
+        if blur_score < self._hard_min_blur:
+            hard_issues.append(
+                f"Image is severely blurry (blur score: {blur_score:.1f} < {self._hard_min_blur}); text cannot be reliably resolved."
+            )
+        elif blur_score < self._soft_min_blur:
+            soft_warnings.append(
+                f"Minor blur detected (blur score: {blur_score:.1f}); OCR will proceed with caution."
+            )
+
+        if brightness_score < self._hard_min_brightness:
+            hard_issues.append("Image is severely underexposed/dark; text is unreadable.")
+        elif brightness_score < self._soft_min_brightness:
+            soft_warnings.append("Low ambient lighting detected; contrast enhancement recommended.")
+        elif brightness_score > self._hard_max_brightness:
+            hard_issues.append("Image is severely overexposed/washed out by extreme glare.")
+        elif brightness_score > self._soft_max_brightness:
+            soft_warnings.append("High brightness or surface glare detected.")
+
+        usable = len(hard_issues) == 0
+        all_issues = hard_issues + soft_warnings
 
         return ImageQualityResult(
-            usable=not issues,
-            issues=issues,
+            usable=usable,
+            issues=all_issues,
             metrics=ImageQualityMetrics(
                 width=width,
                 height=height,

@@ -10,7 +10,7 @@ from src.ocr.ocr_service import OCRResult, Point
 
 
 class DetectedField(BaseModel):
-    """Evidence candidate found by a declaration detector, not a legal conclusion."""
+    """Evidence candidate found by a declaration detector, retaining full provenance."""
 
     field: str
     found: bool
@@ -20,9 +20,17 @@ class DetectedField(BaseModel):
     bounding_boxes: list[tuple[Point, Point, Point, Point]] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
 
+    # Full provenance and statutory metadata (Suggestion 9)
+    raw_text: str | None = None
+    normalized_text: str | None = None
+    matched_pattern: str | None = None
+    role: str | None = None  # e.g. "manufacturer", "marketer", "packer", "importer"
+    sub_fields: dict[str, str] = Field(default_factory=dict)
+    rule_reference: str | None = None  # e.g. "Rule 6(1)(e)", "Rule 10"
+
     @classmethod
-    def not_found(cls, field: str, note: str) -> "DetectedField":
-        return cls(field=field, found=False, notes=[note])
+    def not_found(cls, field: str, note: str, rule_reference: str | None = None) -> "DetectedField":
+        return cls(field=field, found=False, notes=[note], rule_reference=rule_reference)
 
 
 class BaseDetector(ABC):
