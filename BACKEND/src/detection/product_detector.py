@@ -63,17 +63,25 @@ class ProductIdentityDetector(BaseDetector):
                     )
 
         # 3. Layout prominence: top 40% of package with prominent text (Brand / Product Name)
+        EXCLUDED_WORDS = (
+            "barcode", "batch", "b.no", "b no", "lic", "fssai", "mfg", "mfd",
+            "pkd", "exp", "use by", "best before", "net qty", "net quantity",
+            "mrp", "rs.", "inr", "recycle", "direction", "warning", "ingredient",
+        )
         prominent_candidates = []
-        for det in ocr_result.detections:
-            center_y = sum(p[1] for p in det.bounding_box) / 4.0
-            height = max(p[1] for p in det.bounding_box) - min(p[1] for p in det.bounding_box)
-            if det.confidence >= 0.70 and len(det.text.strip()) >= 3:
-                # Exclude obvious numbers or dates
-                if not re.match(r"^[\d\s/.:,-]+$", det.text):
-                    prominent_candidates.append((det, height, center_y))
+        if len(ocr_result.detections) > 1:
+            for det in ocr_result.detections:
+                text_lower = det.text.lower().strip()
+                if any(text_lower.startswith(w) or w in text_lower for w in EXCLUDED_WORDS):
+                    continue
+
+                center_y = sum(p[1] for p in det.bounding_box) / 4.0
+                height = max(p[1] for p in det.bounding_box) - min(p[1] for p in det.bounding_box)
+                if det.confidence >= 0.70 and len(text_lower) >= 3:
+                    if not re.match(r"^[\d\s/.:,-]+$", text_lower):
+                        prominent_candidates.append((det, height, center_y))
 
         if prominent_candidates:
-            # Sort by a combination of height (large text) and vertical position (near top)
             prominent_candidates.sort(key=lambda x: (-x[1], x[2]))
             best_det, _, _ = prominent_candidates[0]
             return detected_field(

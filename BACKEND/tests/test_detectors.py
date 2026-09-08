@@ -36,7 +36,7 @@ def test_field_detector_returns_structured_evidence_for_each_declaration() -> No
 
 
 def test_field_detector_explains_absent_declarations() -> None:
-    fields = FieldDetector().detect_all(OCRResult(detections=[_detection("Fresh Apricot Scrub")]))
+    fields = FieldDetector().detect_all(OCRResult(detections=[_detection("Barcode 890123456789")]))
 
     assert all(field.found is False for field in fields.values())
     assert all(field.notes for field in fields.values())
