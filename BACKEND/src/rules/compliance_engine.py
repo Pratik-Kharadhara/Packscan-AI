@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from enum import StrEnum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.detection.base_detector import DetectedField
 from src.quality.image_quality import ImageQualityResult
