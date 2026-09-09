@@ -41,7 +41,8 @@ def test_pipeline_returns_complete_compliant_result_from_structured_ocr() -> Non
     result = AnalysisPipeline(ocr_service=OCRService(reader=FakeReader())).analyze_package(image)
 
     assert result.compliance.overall_status == "COMPLIANT"
-    assert result.preprocessing.operations == ["grayscale", "clahe_contrast"]
+    assert result.preprocessing.operations == ["rgb_conversion"]
+    assert result.preprocessing.selected_rotation == 0
     assert result.ocr.detections[0].text == "Product: Apricot Scrub"
     assert result.processing_warnings == []
 

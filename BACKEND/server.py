@@ -40,6 +40,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount sample benchmark image files
+if PATHS.sample_data_dir.exists():
+    app.mount(
+        "/api/sample-images",
+        StaticFiles(directory=str(PATHS.sample_data_dir)),
+        name="sample_images",
+    )
+
 # Initialize pipeline and repository
 pipeline = AnalysisPipeline()
 repository = ScanRepository()
@@ -144,6 +152,46 @@ def extract_percent_boxes(
     return boxes
 
 
+def extract_raw_ocr_percent_boxes(
+    raw_detections: list[Any],
+    img_w: int,
+    img_h: int,
+) -> list[dict[str, Any]]:
+    """Convert raw OCR token bounding boxes to percentage coordinates (0-100)."""
+    boxes = []
+    for idx, det in enumerate(raw_detections):
+        bbox = det.bounding_box
+        xs = [p[0] for p in bbox]
+        ys = [p[1] for p in bbox]
+        min_x, max_x = max(0.0, min(xs)), min(float(img_w), max(xs))
+        min_y, max_y = max(0.0, min(ys)), min(float(img_h), max(ys))
+
+        box_w = max_x - min_x
+        box_h = max_y - min_y
+        if box_w <= 0 or box_h <= 0 or img_w <= 0 or img_h <= 0:
+            continue
+
+        pct_x = round((min_x / img_w) * 100.0, 2)
+        pct_y = round((min_y / img_h) * 100.0, 2)
+        pct_w = round((box_w / img_w) * 100.0, 2)
+        pct_h = round((box_h / img_h) * 100.0, 2)
+        conf_pct = round((det.confidence or 0.0) * 100.0, 1)
+
+        boxes.append(
+            {
+                "id": f"raw-box-{idx}",
+                "text": det.text,
+                "confidence": conf_pct,
+                "x": pct_x,
+                "y": pct_y,
+                "width": pct_w,
+                "height": pct_h,
+                "bbox": [[round((p[0] / img_w) * 100.0, 2), round((p[1] / img_h) * 100.0, 2)] for p in bbox],
+            }
+        )
+    return boxes
+
+
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     """Health check endpoint."""
@@ -162,6 +210,36 @@ def get_history(limit: int = 50) -> list[dict[str, Any]]:
         else:
             out.append(rec)
     return out
+
+
+@app.get("/api/samples")
+def get_samples() -> list[dict[str, Any]]:
+    """Return available packaging sample images from the benchmark dataset."""
+    sample_files = sorted(PATHS.sample_data_dir.glob("Product1_*.jpeg"))
+    panel_titles = {
+        "Product1_1.jpeg": "Tata Salt — Front Display Panel (Commodity)",
+        "Product1_2.jpeg": "Tata Salt — Retail Shelf Environment 1",
+        "Product1_3.jpeg": "Tata Salt — Retail Shelf Environment 2",
+        "Product1_4.jpeg": "Tata Salt — Back Panel (Marketer & Address)",
+        "Product1_5.jpeg": "Tata Salt — Back Panel (MRP & Helpline)",
+        "Product1_6.jpeg": "Tata Salt — Back Panel (Full Manufacturer & Taxes)",
+        "Product1_7.jpeg": "Tata Salt — Date & Batch Inkjet Stamping",
+    }
+    out = []
+    for p in sample_files:
+        fname = p.name
+        out.append(
+            {
+                "id": fname.split(".")[0],
+                "filename": fname,
+                "title": panel_titles.get(fname, fname),
+                "url": f"/api/sample-images/{fname}",
+                "category": "Food & Beverages",
+                "productName": "Tata Salt (1 kg)",
+            }
+        )
+    return out
+
 
 
 @app.post("/api/report/pdf")
@@ -191,11 +269,16 @@ async def scan_package(
     """Analyze uploaded package photograph(s) using the Legal Metrology OCR pipeline."""
     start_time = time.time()
 
+    # Normalize FastAPI Form defaults when called directly in tests
+    clean_category = category if isinstance(category, str) else "Food & Beverages"
+    clean_product_name = product_name if isinstance(product_name, str) else None
+    clean_scan_mode = scan_mode if isinstance(scan_mode, str) else "single"
+
     # Collect files
     upload_list: list[UploadFile] = []
-    if files:
+    if isinstance(files, list) and files:
         upload_list.extend(files)
-    elif file:
+    elif isinstance(file, UploadFile):
         upload_list.append(file)
 
     if not upload_list:
@@ -208,15 +291,28 @@ async def scan_package(
     quality_scores: list[float] = []
 
     primary_image_url: str = ""
+    primary_result: PackageAnalysisResult | None = None
+    primary_quality: Any | None = None
 
     for idx, up_file in enumerate(upload_list):
         content = await up_file.read()
+        if not content:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Uploaded file '{up_file.filename or 'upload'}' is empty.",
+            )
+
         np_arr = np.frombuffer(content, np.uint8)
         img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        if img_bgr is None:
-            continue
+        if img_bgr is None or img_bgr.size == 0:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Unable to decode image file '{up_file.filename or 'upload'}'. "
+                    "Ensure the file is a valid, uncorrupted image (JPEG, PNG, WebP)."
+                ),
+            )
 
-        h, w = img_bgr.shape[:2]
         panel_label = (
             "Front Display Panel"
             if idx == 0
@@ -225,14 +321,24 @@ async def scan_package(
 
         # Run analysis pipeline
         result: PackageAnalysisResult = pipeline.analyze_package(img_bgr)
+        if primary_result is None:
+            primary_result = result
+            primary_quality = result.quality
 
-        # Convert image to data URL for frontend
+        # If 180° rotation was selected by the pipeline, orient the display image
+        if result.preprocessing.selected_rotation == 180:
+            img_bgr = cv2.rotate(img_bgr, cv2.ROTATE_180)
+
+        # Convert oriented image to data URL for frontend display
         data_url = to_data_url(img_bgr)
         if not primary_image_url:
             primary_image_url = data_url
 
-        # Extract panel bounding boxes
-        panel_boxes = extract_percent_boxes(result.detected_fields, w, h)
+        # Extract panel bounding boxes using PROCESSED dimensions matching OCR space
+        proc_w = result.preprocessing.processed_width
+        proc_h = result.preprocessing.processed_height
+        panel_boxes = extract_percent_boxes(result.detected_fields, proc_w, proc_h)
+        panel_raw_boxes = extract_raw_ocr_percent_boxes(result.ocr.detections, proc_w, proc_h)
         if idx == 0:
             all_bounding_boxes.extend(panel_boxes)
 
@@ -243,6 +349,8 @@ async def scan_package(
                 "name": up_file.filename or f"Panel {idx + 1}",
                 "label": panel_label,
                 "boundingBoxes": panel_boxes,
+                "rawOcrBoxes": panel_raw_boxes,
+                "selectedRotation": result.preprocessing.selected_rotation,
             }
         )
 
@@ -257,14 +365,16 @@ async def scan_package(
                 if not existing or not existing.found or (det.confidence or 0) > (existing.confidence or 0):
                     consolidated_fields[f_name] = det
 
-    if not consolidated_fields:
-        # Run evaluation on single empty result
-        empty_res = pipeline.analyze_package(np.zeros((100, 100, 3), dtype=np.uint8))
-        consolidated_fields = empty_res.detected_fields
+    if not consolidated_fields and primary_result is not None:
+        consolidated_fields = primary_result.detected_fields
 
-    # Evaluate consolidated fields using compliance engine
-    dummy_quality = pipeline._quality_assessor.assess(np.full((800, 800, 3), 128, dtype=np.uint8))
-    compliance = pipeline._compliance_engine.evaluate(dummy_quality, consolidated_fields)
+    # Evaluate consolidated fields using compliance engine with actual image quality
+    eval_quality = (
+        primary_quality
+        if primary_quality is not None
+        else pipeline._quality_assessor.assess(np.full((800, 800, 3), 128, dtype=np.uint8))
+    )
+    compliance = pipeline._compliance_engine.evaluate(eval_quality, consolidated_fields)
 
     # Build frontend VerifiedField objects
     fields_out: dict[str, Any] = {}
@@ -280,42 +390,59 @@ async def scan_package(
         is_found = det.found if det else False
         conf = round((det.confidence or 0.0) * 100.0, 1) if (det and det.found) else 0.0
 
-        if is_found:
+        is_compliant_pass = bool(check and check.status == CheckStatus.PASS)
+        if is_compliant_pass:
             detected_count += 1
             confidence_sum += conf
 
-        if is_found and conf >= 65.0:
+        if is_compliant_pass:
             f_status = "DETECTED"
-        elif is_found:
+        elif is_found and conf < 65.0:
             f_status = "LOW_CONFIDENCE"
+        elif is_found and check and check.status == CheckStatus.FAIL:
+            f_status = "LOW_CONFIDENCE"
+        elif f_name == "manufacturer_packer" and len(upload_list) == 1:
+            f_status = "NOT_CAPTURED"
         else:
             f_status = "NOT_DETECTED"
 
-        explanation = check.reason if check else "Declaration not verified."
+        if not is_found and f_name == "manufacturer_packer" and len(upload_list) == 1:
+            explanation = (
+                "Manufacturer declaration not visible in supplied images. "
+                "Capture the manufacturer/address panel for verification."
+            )
+            warning_msg = "Manufacturer declaration not visible in supplied images."
+            remedy_msg = "Capture the manufacturer/address panel for verification."
+        else:
+            explanation = check.reason if check else "Declaration not verified."
+            warning_msg = None if is_compliant_pass else f"Mandatory declaration absent under {meta['legalRule']}"
+            remedy_msg = (
+                None
+                if is_compliant_pass
+                else f"Ensure plain and conspicuous declaration conforming to {meta['legalRule']}."
+            )
+
         level2_valid = bool(is_found and check and check.status == CheckStatus.PASS)
 
         fields_out[f_key] = {
             "key": f_key,
             "title": meta["title"],
-            "legalRule": meta["legalRule"],
+            "legalRule": (check.applicable_rule if check and check.applicable_rule else meta["legalRule"]),
             "description": meta["description"],
             "status": f_status,
             "confidence": conf,
-            "extractedText": det.value if (det and det.found) else None,
+            "extractedText": (check.detected_value if check and check.detected_value else (det.value if det and det.found else None)),
             "detectedFormat": det.matched_pattern if (det and det.found) else None,
             "explanation": explanation,
+            "validationResult": check.validation_result if check else "NOT_FOUND",
             "level1Presence": is_found,
             "level2FormatValid": level2_valid,
             "level3ReadabilityGood": conf >= 65.0,
-            "warning": None if is_found else f"Mandatory declaration absent under {meta['legalRule']}",
-            "remedy": (
-                None
-                if is_found
-                else f"Ensure plain and conspicuous declaration conforming to {meta['legalRule']}."
-            ),
+            "warning": warning_msg,
+            "remedy": remedy_msg,
         }
 
-    # Determine final overall status
+    # Final overall status directly reflects statutory compliance engine evaluation
     overall_status_str = compliance.overall_status.value
     if overall_status_str == OverallStatus.COMPLIANT.value:
         final_status = "COMPLIANT"
@@ -324,12 +451,9 @@ async def scan_package(
     else:
         final_status = "NEEDS_REVIEW"
 
-    # In multi-angle or single scan, if all 6 fields are detected and pass, mark compliant
-    if detected_count >= 5 and final_status == "NEEDS_REVIEW":
-        # Check if missing field is truly missing or low confidence
-        missing_count = sum(1 for f in fields_out.values() if f["status"] == "NOT_DETECTED")
-        if missing_count == 0:
-            final_status = "COMPLIANT"
+    # Only mark compliant if all 6 statutory fields pass with sufficient evidence
+    if detected_count == 6 and final_status != "NON_COMPLIANT":
+        final_status = "COMPLIANT"
 
     avg_conf = round(confidence_sum / max(1, detected_count), 1)
     avg_quality = round(sum(quality_scores) / max(1, len(quality_scores)), 1)
@@ -341,7 +465,7 @@ async def scan_package(
     # Extract detected product or brand name
     prod_det = consolidated_fields.get("product_identity")
     detected_prod_name = (
-        product_name or (prod_det.value if prod_det and prod_det.found else "Packaged Commodity")
+        clean_product_name or (prod_det.value if prod_det and prod_det.found else "Packaged Commodity")
     )
 
     mfg_det = consolidated_fields.get("manufacturer_packer")
@@ -351,12 +475,12 @@ async def scan_package(
         "id": scan_id,
         "productName": detected_prod_name,
         "brandName": brand_name,
-        "category": category,
+        "category": clean_category,
         "timestamp": now_str,
         "imageUrl": primary_image_url,
         "imageThumbnail": primary_image_url,
         "images": panel_images_out if len(panel_images_out) > 1 else None,
-        "scanMode": scan_mode,
+        "scanMode": clean_scan_mode,
         "finalStatus": final_status,
         "overallConfidence": avg_conf,
         "detectedCount": detected_count,
@@ -364,9 +488,34 @@ async def scan_package(
         "deviceSource": "PackScan AI Mobile/Web Scanner",
         "fields": fields_out,
         "boundingBoxes": all_bounding_boxes,
+        "rawOcrBoxes": panel_images_out[0]["rawOcrBoxes"] if panel_images_out else [],
         "summaryNote": compliance.summary,
         "imageQualityScore": avg_quality,
         "processingTimeMs": proc_time,
+        "preprocessing": (
+            {
+                "originalWidth": primary_result.preprocessing.original_width,
+                "originalHeight": primary_result.preprocessing.original_height,
+                "processedWidth": primary_result.preprocessing.processed_width,
+                "processedHeight": primary_result.preprocessing.processed_height,
+                "selectedRotation": primary_result.preprocessing.selected_rotation,
+                "operations": primary_result.preprocessing.operations,
+            }
+            if primary_result
+            else None
+        ),
+        "rawOcrDetections": (
+            [
+                {
+                    "text": d.text,
+                    "confidence": round(d.confidence, 4),
+                    "bbox": [[p[0], p[1]] for p in d.bounding_box],
+                }
+                for d in primary_result.ocr.detections
+            ]
+            if primary_result
+            else []
+        ),
     }
 
     # Save to SQLite history
@@ -374,7 +523,7 @@ async def scan_package(
         scan_id=scan_id,
         timestamp=now_str,
         product_name=detected_prod_name,
-        category=category,
+        category=clean_category,
         final_status=final_status,
         overall_confidence=avg_conf,
         detected_count=detected_count,

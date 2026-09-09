@@ -47,6 +47,15 @@ def test_question_mark_without_mrp_context_is_not_treated_as_price() -> None:
     assert result.found is False
 
 
+def test_mrp_comma_decimal_is_normalized_without_accepting_unrelated_numbers() -> None:
+    ocr = OCRResult(detections=[_det("MRP ? 32,00 incl. of all taxes", 10, 50, 220, 70)])
+
+    result = MRPDetector().detect(ocr)
+
+    assert result.value == "Rs. 32.00"
+    assert result.sub_fields["amount"] == "32.00"
+
+
 def test_spatial_line_grouping_multi_box_date() -> None:
     """Test grouping [Date of] [Packaging:] [AuG/26] on same horizontal band (Suggestion 2)."""
     ocr = OCRResult(
@@ -113,6 +122,48 @@ def test_manufacturer_role_distinction_and_pin() -> None:
     assert "manufacturer" in result.sub_fields.get("roles_detected", "")
     assert "marketer" in result.sub_fields.get("roles_detected", "")
     assert "700 071" in result.sub_fields.get("pin_code", "") or "361 345" in result.sub_fields.get("pin_code", "")
+
+
+def test_marketer_only_declaration_is_not_labeled_as_manufacturer() -> None:
+    result = ManufacturerDetector().detect(
+        OCRResult(detections=[_det("Mkt by: Example Consumer Products Limited", 10, 50, 300, 75)])
+    )
+
+    assert result.found is True
+    assert result.role == "marketer"
+    assert result.sub_fields["roles_detected"] == "marketer"
+
+
+def test_consumer_contact_requires_consumer_care_context() -> None:
+    result = ContactDetector().detect(OCRResult(detections=[_det("Call 9876543210", 10, 50, 180, 75)]))
+
+    assert result.found is False
+
+
+def test_quantity_requires_net_quantity_context() -> None:
+    result = QuantityDetector().detect(OCRResult(detections=[_det("Protein 25 g", 10, 50, 180, 75)]))
+
+    assert result.found is False
+
+
+def test_product_identity_ignores_consumer_care_section_header() -> None:
+    result = FieldDetector().detect_all(
+        OCRResult(
+            detections=[
+                _det("CONSUMER CARE DETAILS; TATA CONSUMER PRODUCTS LTD; CUSTOMER CARE", 10, 50, 400, 75),
+            ]
+        )
+    )["product_identity"]
+
+    assert result.found is False
+
+
+def test_product_identity_extracts_value_after_explicit_label() -> None:
+    result = FieldDetector().detect_all(
+        OCRResult(detections=[_det("Product Name: Iodised Salt", 10, 50, 220, 75)])
+    )["product_identity"]
+
+    assert result.value == "Iodised Salt"
 
 
 def test_consumer_contact_toll_free_and_email() -> None:

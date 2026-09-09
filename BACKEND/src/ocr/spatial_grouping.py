@@ -6,10 +6,16 @@ and stacked key-value blocks using height-adaptive geometric thresholds.
 
 from __future__ import annotations
 
+import re
 from pydantic import BaseModel, Field
 
 from src.ocr.ocr_normalizer import NormalizedDetection
 from src.ocr.ocr_types import Point
+
+DISTINCT_FIELD_STARTS = re.compile(
+    r"^(?:product|commodity|item|net\s*(?:qty|quantity|wt|weight)?|date\s*of|mfg|pkd|mfd|manufactured|mkt|marketed|packed|imported|mrp|rs\b|₹|inr|customer\s*care|consumer\s*care|toll\s*free)\b",
+    re.IGNORECASE,
+)
 
 
 def compute_bounding_envelope(
@@ -152,9 +158,13 @@ class SpatialGrouper:
                 ref_h = max(prev_det.box_height, next_det.box_height, 10.0)
                 max_allowed_gap = self.max_horizontal_gap_factor * ref_h
 
-                # If gap is small enough, keep in same segment; otherwise split!
-                # (Prevents merging "MRP ₹32" on the left with "NET QTY 1kg" on far right)
-                if gap <= max_allowed_gap:
+                # Check if next token is a distinct field keyword starting a new column
+                is_distinct_column = (
+                    gap > (1.2 * ref_h) and bool(DISTINCT_FIELD_STARTS.search(next_det.text))
+                )
+
+                # If gap is small enough and not a distinct column, keep in same segment; otherwise split!
+                if gap <= max_allowed_gap and not is_distinct_column:
                     current_segment.append(next_det)
                 else:
                     result_lines.append(GroupedLine.from_detections(current_segment))
@@ -182,7 +192,6 @@ class SpatialGrouper:
                 if 0 <= v_gap <= (self.stacked_vertical_gap_factor * ref_h):
                     # Check horizontal overlap
                     overlap = min(top_line.right, bottom_line.right) - max(top_line.left, bottom_line.left)
-                    min_w = min(top_line.box_width, bottom_line.box_width)
                     if overlap > 0 or (abs(top_line.left - bottom_line.left) < ref_h * 2.0):
                         composite = GroupedLine(
                             text=f"{top_line.text} {bottom_line.text}",
@@ -194,3 +203,77 @@ class SpatialGrouper:
                         stacked.append(composite)
 
         return stacked
+
+    def generate_address_blocks(self, lines: list[GroupedLine]) -> list[GroupedLine]:
+        """Aggregate multi-line manufacturer/packer/marketer addresses into coherent blocks."""
+        role_triggers = re.compile(
+            r"\b(?:mfg|mfd|manufactured|mkt|marketed|pkd|packed|imported)\s*(?:by)?\b",
+            re.IGNORECASE,
+        )
+        address_cues = re.compile(
+            r"\b(?:ltd|limited|pvt|road|street|nagar|marg|lane|floor|block|sector|dist|district|state|"
+            r"p\.?o\.?|post\s*office|gujarat|mumbai|kolkata|delhi|bengaluru|chennai|hyderabad|"
+            r"india|[1-9]\d{2}\s?\d{3})\b",
+            re.IGNORECASE,
+        )
+        non_address_triggers = re.compile(
+            r"\b(?:net\s*(?:qty|quantity|wt|weight)?|mrp|mfd|date\s*of|customer\s*care|consumer\s*care|toll\s*free|best\s*before|use\s*by|batch|b\.?no)\b",
+            re.IGNORECASE,
+        )
+
+        blocks: list[GroupedLine] = []
+        n = len(lines)
+        used_indices: set[int] = set()
+
+        for i in range(n):
+            header_line = lines[i]
+            if not role_triggers.search(header_line.text):
+                continue
+            if i in used_indices:
+                continue
+
+            current_block_lines = [header_line]
+            last_bottom = header_line.bottom
+            ref_h = max(header_line.box_height, 12.0)
+
+            for j in range(i + 1, min(i + 5, n)):
+                candidate = lines[j]
+                # Break immediately if line belongs to a distinct declaration
+                if non_address_triggers.search(candidate.text):
+                    break
+
+                v_gap = candidate.top - last_bottom
+                # Must be reasonably below and horizontally aligned
+                if 0 <= v_gap <= (self.stacked_vertical_gap_factor * ref_h * 1.5):
+                    overlap = min(header_line.right + 120.0, candidate.right) - max(header_line.left - 60.0, candidate.left)
+                    # Candidate must match address cues
+                    if overlap > 0 and address_cues.search(candidate.text):
+                        current_block_lines.append(candidate)
+                        last_bottom = candidate.bottom
+                        used_indices.add(j)
+                    else:
+                        break
+                elif v_gap < 0:
+                    continue
+                else:
+                    break
+
+            if len(current_block_lines) > 1:
+                combined_text = " \n ".join(l.text for l in current_block_lines)
+                combined_raw = " \n ".join(l.raw_text for l in current_block_lines)
+                avg_conf = sum(l.confidence for l in current_block_lines) / len(current_block_lines)
+                all_dets: list[NormalizedDetection] = []
+                for l in current_block_lines:
+                    all_dets.extend(l.detections)
+                envelope = compute_bounding_envelope([l.bounding_box for l in current_block_lines])
+                blocks.append(
+                    GroupedLine(
+                        text=combined_text,
+                        raw_text=combined_raw,
+                        confidence=round(avg_conf, 4),
+                        bounding_box=envelope,
+                        detections=all_dets,
+                    )
+                )
+
+        return blocks

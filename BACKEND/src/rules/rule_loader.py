@@ -15,6 +15,12 @@ DEFAULT_RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "compliance
 class FieldRule(BaseModel):
     """One field's configurable screening requirements."""
 
+    rule_id: str | None = None
+    source_rule: str | None = None
+    requirement: str | None = None
+    applicability: str | None = None
+    validation: str | None = None
+    notes: str | None = None
     required: bool
     minimum_confidence: float = Field(ge=0.0, le=1.0)
     value_pattern: str

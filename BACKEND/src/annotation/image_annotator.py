@@ -166,8 +166,12 @@ class ImageAnnotator:
             analysis_result.preprocessing.processed_height,
         )
 
+        canvas = load_image(target_image).copy()
+        if getattr(analysis_result.preprocessing, "selected_rotation", 0) == 180:
+            canvas = cv2.rotate(canvas, cv2.ROTATE_180)
+
         return self.annotate(
-            image=target_image,
+            image=canvas,
             detected_fields=analysis_result.detected_fields,
             compliance_checks=analysis_result.compliance.checks,
             reference_dimensions=ref_dims,

@@ -1,6 +1,6 @@
 {
-  "name": "PackScan AI",
-  "description": "Automated Package Compliance Verification System for India's Legal Metrology (Packaged Commodities) Rules, 2011 by Team Vision Forge.",
+  "name": "PackScan.Ai",
+  "description": "Automated Package Compliance Verification System for India's Legal Metrology (Packaged Commodities) Rules, 2011.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

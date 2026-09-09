@@ -24,33 +24,37 @@ class ManufacturerDetector(BaseDetector):
         self._pin_pattern = re.compile(patterns["pin_code_pattern"])
 
     def detect(self, ocr_result: OCRResult) -> DetectedField:
-        candidates = list(ocr_result.grouped_lines) + list(ocr_result.stacked_lines)
+        # 1. Search address_blocks first, then grouped/stacked lines
+        candidates = list(ocr_result.address_blocks) + list(ocr_result.grouped_lines) + list(ocr_result.stacked_lines)
         if not candidates and ocr_result.detections:
             candidates = ocr_result.detections  # type: ignore
 
         detected_roles: list[str] = []
         matched_lines: list[object] = []
         extracted_pin: str | None = None
+        primary_role: str | None = None
 
         # Search for supply chain roles across lines
         for line in candidates:
-            text = getattr(line, "text", getattr(line, "text", ""))
+            text = getattr(line, "text", "")
             role_found = None
             if self._mfg.search(text):
                 role_found = "manufacturer"
-            elif self._mkt.search(text):
-                role_found = "marketer"
             elif self._packer.search(text):
                 role_found = "packer"
             elif self._importer.search(text):
                 role_found = "importer"
+            elif self._mkt.search(text):
+                role_found = "marketer"
 
             if role_found:
                 if role_found not in detected_roles:
                     detected_roles.append(role_found)
                 matched_lines.append(line)
+                if primary_role is None:
+                    primary_role = role_found
 
-            # Check for PIN code anywhere in lines near manufacturer declarations
+            # Check for PIN code anywhere in lines near supply chain declarations
             if extracted_pin is None:
                 pin_match = self._pin_pattern.search(text)
                 if pin_match:
@@ -64,18 +68,20 @@ class ManufacturerDetector(BaseDetector):
             if not all_boxes:
                 all_boxes = [first_det.bounding_box]
 
-            primary_role = "manufacturer" if "manufacturer" in detected_roles else detected_roles[0]
-            display_value = f"{primary_role.title()}: {getattr(primary_line, 'text', first_det.text)}"
+            role_to_use = primary_role or detected_roles[0]
+            line_text = getattr(primary_line, "text", first_det.text)
+            display_value = f"{role_to_use.title()}: {line_text}"
 
             sub_fields = {
-                "role": primary_role,
+                "role": role_to_use,
                 "roles_detected": ", ".join(detected_roles),
                 "has_pin": str(extracted_pin is not None).lower(),
+                "detection_method": "address_block" if primary_line in getattr(ocr_result, "address_blocks", []) else "grouped_line",
             }
             if extracted_pin:
                 sub_fields["pin_code"] = extracted_pin
 
-            note = f"{primary_role.title()} declaration detected ({', '.join(detected_roles)})."
+            note = f"{role_to_use.title()} declaration detected ({', '.join(detected_roles)})."
             if extracted_pin:
                 note += f" Postal PIN code {extracted_pin} verified."
 
@@ -84,12 +90,13 @@ class ManufacturerDetector(BaseDetector):
                 first_det,
                 display_value,
                 note,
+                source_line=primary_line,
                 raw_text=getattr(primary_line, "raw_text", first_det.text),
-                normalized_text=getattr(primary_line, "text", first_det.text),
+                normalized_text=line_text,
                 matched_pattern="role_context",
-                role=primary_role,
+                role=role_to_use,
                 sub_fields=sub_fields,
-                rule_reference="Rule 6(1)(a)",
+                rule_reference="Rule 6(1)(a) & Rule 10",
                 bounding_boxes=all_boxes,
             )
 

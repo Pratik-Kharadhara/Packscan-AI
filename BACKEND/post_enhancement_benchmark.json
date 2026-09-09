@@ -1,0 +1,548 @@
+{
+  "Product1_1.jpeg": {
+    "file": "Product1_1.jpeg",
+    "elapsed_sec": 21.9,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 28,
+    "ocr_avg_confidence": 0.6108,
+    "detected_fields_count": 1,
+    "detected_fields": {
+      "product_identity": {
+        "value": "Salt",
+        "confidence": 0.989,
+        "matched_pattern": "commodity_descriptor",
+        "rule_reference": "Rule 6(1)(b)",
+        "sub_fields": {
+          "method": "commodity_descriptor",
+          "matched_commodity": "salt"
+        }
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "PASS",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): Compliant declaration detected: Salt. (Generic commodity descriptor 'salt' identified under Rule 6(1)(b).)",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "REVIEW",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  },
+  "Product1_2.jpeg": {
+    "file": "Product1_2.jpeg",
+    "elapsed_sec": 26.25,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 125,
+    "ocr_avg_confidence": 0.3351,
+    "detected_fields_count": 0,
+    "detected_fields": {},
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "REVIEW",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "REVIEW",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  },
+  "Product1_3.jpeg": {
+    "file": "Product1_3.jpeg",
+    "elapsed_sec": 21.18,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 92,
+    "ocr_avg_confidence": 0.3523,
+    "detected_fields_count": 0,
+    "detected_fields": {},
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "REVIEW",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "REVIEW",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  },
+  "Product1_4.jpeg": {
+    "file": "Product1_4.jpeg",
+    "elapsed_sec": 18.6,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 45,
+    "ocr_avg_confidence": 0.691,
+    "detected_fields_count": 2,
+    "detected_fields": {
+      "product_identity": {
+        "value": "TATA Salt",
+        "confidence": 0.7527,
+        "matched_pattern": "commodity_descriptor",
+        "rule_reference": "Rule 6(1)(b)",
+        "sub_fields": {
+          "method": "commodity_descriptor",
+          "matched_commodity": "salt"
+        }
+      },
+      "manufacturer_packer": {
+        "value": "Marketer: Ist / mkt by:: Tata (Floor;, \u20ac Consumer ' 43, Jawaharlal Nehru Road, Products Limited_Tata Centre fsal 1001403100102 \n For Gujarat : Repacking ' Lic; No: 10012021000351",
+        "confidence": 0.6171,
+        "matched_pattern": "role_context",
+        "rule_reference": "Rule 6(1)(a) & Rule 10",
+        "sub_fields": {
+          "role": "marketer",
+          "roles_detected": "marketer, manufacturer",
+          "has_pin": "true",
+          "detection_method": "address_block",
+          "pin_code": "700 071"
+        }
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "PASS",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): Compliant declaration detected: TATA Salt. (Generic commodity descriptor 'salt' identified under Rule 6(1)(b).)",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "REVIEW",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: Declaration detected with confidence 0.62, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  },
+  "Product1_5.jpeg": {
+    "file": "Product1_5.jpeg",
+    "elapsed_sec": 18.6,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 62,
+    "ocr_avg_confidence": 0.3973,
+    "detected_fields_count": 3,
+    "detected_fields": {
+      "product_identity": {
+        "value": "Salt",
+        "confidence": 0.9923,
+        "matched_pattern": "commodity_descriptor",
+        "rule_reference": "Rule 6(1)(b)",
+        "sub_fields": {
+          "method": "commodity_descriptor",
+          "matched_commodity": "salt"
+        }
+      },
+      "mrp": {
+        "value": "Rs. 32.00",
+        "confidence": 0.0998,
+        "matched_pattern": "mrp_price",
+        "rule_reference": "Rule 6(1)(e)",
+        "sub_fields": {
+          "amount": "32.00",
+          "currency": "INR",
+          "tax_included": "false",
+          "detection_method": "context_grouped"
+        }
+      },
+      "consumer_contact": {
+        "value": "1800 108 4488",
+        "confidence": 0.5612,
+        "matched_pattern": "context_contact",
+        "rule_reference": "Rule 6(2)",
+        "sub_fields": {
+          "toll_free": "1800 108 4488"
+        }
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "PASS",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): Compliant declaration detected: Salt. (Generic commodity descriptor 'salt' identified under Rule 6(1)(b).)",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "REVIEW",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): Declaration detected with confidence 0.10, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): Declaration detected with confidence 0.56, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  },
+  "Product1_6.jpeg": {
+    "file": "Product1_6.jpeg",
+    "elapsed_sec": 17.75,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 68,
+    "ocr_avg_confidence": 0.4684,
+    "detected_fields_count": 4,
+    "detected_fields": {
+      "product_identity": {
+        "value": "Tata Salt",
+        "confidence": 0.6855,
+        "matched_pattern": "commodity_descriptor",
+        "rule_reference": "Rule 6(1)(b)",
+        "sub_fields": {
+          "method": "commodity_descriptor",
+          "matched_commodity": "salt"
+        }
+      },
+      "manufacturer_packer": {
+        "value": "Manufacturer: mfg by:: Mithapur 361 345, Tata Chemicals Limited P 0 District-Devbhumi Dwarka ,",
+        "confidence": 0.8843,
+        "matched_pattern": "role_context",
+        "rule_reference": "Rule 6(1)(a) & Rule 10",
+        "sub_fields": {
+          "role": "manufacturer",
+          "roles_detected": "manufacturer",
+          "has_pin": "true",
+          "detection_method": "grouped_line",
+          "pin_code": "700 071"
+        }
+      },
+      "mrp": {
+        "value": "Rs. 32.00",
+        "confidence": 0.3381,
+        "matched_pattern": "mrp_with_taxes",
+        "rule_reference": "Rule 6(1)(e)",
+        "sub_fields": {
+          "amount": "32.00",
+          "currency": "INR",
+          "tax_included": "true",
+          "detection_method": "context_grouped"
+        }
+      },
+      "consumer_contact": {
+        "value": "1800 108 4488",
+        "confidence": 0.5255,
+        "matched_pattern": "context_contact",
+        "rule_reference": "Rule 6(2)",
+        "sub_fields": {
+          "toll_free": "1800 108 4488"
+        }
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "PASS",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): Compliant declaration detected: Tata Salt. (Generic commodity descriptor 'salt' identified under Rule 6(1)(b).)",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "PASS",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: Compliant declaration detected: Manufacturer: mfg by:: Mithapur 361 345, Tata Chemicals Limited P 0 District-Devbhumi Dwarka ,. (Manufacturer declaration detected (manufacturer). Postal PIN code 700 071 verified.)",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): Declaration detected with confidence 0.34, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): Declaration detected with confidence 0.53, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  },
+  "Product1_7.jpeg": {
+    "file": "Product1_7.jpeg",
+    "elapsed_sec": 19.18,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 42,
+    "ocr_avg_confidence": 0.3642,
+    "detected_fields_count": 2,
+    "detected_fields": {
+      "manufacture_date": {
+        "value": "Aug/26",
+        "confidence": 0.5688,
+        "matched_pattern": "packaging_date",
+        "rule_reference": "Rule 6(1)(d)",
+        "sub_fields": {
+          "date_type": "packaging_date",
+          "raw_date": "Aug/26",
+          "expiry_date": "JUL/28"
+        }
+      },
+      "mrp": {
+        "value": "Rs. 32.00",
+        "confidence": 0.2463,
+        "matched_pattern": "mrp_price",
+        "rule_reference": "Rule 6(1)(e)",
+        "sub_fields": {
+          "amount": "32.00",
+          "currency": "INR",
+          "tax_included": "false",
+          "detection_method": "context_grouped"
+        }
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "compliance_checks": {
+      "product_identity": {
+        "rule_id": "LMR-2011-R6-1-B",
+        "status": "REVIEW",
+        "legal_name": "Common or Generic Name of Commodity",
+        "reason": "Rule 6(1)(b): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(b)"
+      },
+      "manufacturer_packer": {
+        "rule_id": "LMR-2011-R6-1-A",
+        "status": "REVIEW",
+        "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer",
+        "reason": "Rule 6(1)(a) & Rule 10: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(a) & Rule 10"
+      },
+      "net_quantity": {
+        "rule_id": "LMR-2011-R6-1-C",
+        "status": "REVIEW",
+        "legal_name": "Net Quantity in Standard Metric Units",
+        "reason": "Rule 6(1)(c) & Rule 13: No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(1)(c) & Rule 13"
+      },
+      "manufacture_date": {
+        "rule_id": "LMR-2011-R6-1-D",
+        "status": "REVIEW",
+        "legal_name": "Month and Year of Manufacture / Pre-packing",
+        "reason": "Rule 6(1)(d): Declaration detected with confidence 0.57, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(1)(d)"
+      },
+      "mrp": {
+        "rule_id": "LMR-2011-R6-1-E",
+        "status": "REVIEW",
+        "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes",
+        "reason": "Rule 6(1)(e) & Rule 3(m): Declaration detected with confidence 0.25, below configured threshold of 0.65.",
+        "rule_reference": "Rule 6(1)(e) & Rule 3(m)"
+      },
+      "consumer_contact": {
+        "rule_id": "LMR-2011-R6-2",
+        "status": "REVIEW",
+        "legal_name": "Consumer Care / Grievance Contact Details",
+        "reason": "Rule 6(2): No reliable declaration detected on scanned panel. Manual verification recommended.",
+        "rule_reference": "Rule 6(2)"
+      }
+    },
+    "warnings": []
+  }
+}
