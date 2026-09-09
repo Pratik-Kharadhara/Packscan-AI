@@ -1,37 +1,461 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #166534;
-  --color-primary-dark: #14532d;
-  --color-primary-light: #15803d;
-  --color-secondary: #65a30d;
-  --color-secondary-hover: #4d7c0f;
-  --color-page-bg: #f7f8f5;
-  --color-card-bg: #ffffff;
-  --color-charcoal: #1f2937;
-  --color-charcoal-muted: #4b5563;
-  --color-charcoal-light: #6b7280;
-  --color-border-hairline: #d1d5db;
-  --color-status-compliant: #15803d;
-  --color-status-violation: #b91c1c;
-  --color-status-review: #b45309;
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+@layer base {
+  :root {
+    --color-primary: #166534;
+    --color-primary-dark: #14532D;
+    --color-secondary: #65A30D;
+    --color-secondary-dark: #4D7C0F;
+    --color-bg-canvas: #F7F8F5;
+    --color-surface-card: #FFFFFF;
+    --color-text-main: #1F2937;
+    --color-text-muted: #6B7280;
+    --color-border-hairline: #D1D5DB;
+  }
 
-body {
-  background-color: #f7f8f5;
-  color: #1f2937;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+  html.dark {
+    --color-primary: #22C55E;
+    --color-primary-dark: #16A34A;
+    --color-secondary: #84CC16;
+    --color-secondary-dark: #65A30D;
+    --color-bg-canvas: #0B0F17;
+    --color-surface-card: #151B26;
+    --color-text-main: #F1F5F9;
+    --color-text-muted: #94A3B8;
+    --color-border-hairline: #263143;
+    color-scheme: dark;
+  }
 
-/* Print styling adjustments */
-@media print {
   body {
-    background-color: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #F7F8F5;
+    color: #1F2937;
+    letter-spacing: -0.01em;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
-  header, footer, #nav-scan-cta, #mobile-menu-toggle {
-    display: none !important;
+
+  html.dark body {
+    background-color: #0B0F17;
+    color: #F1F5F9;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.025em;
+    font-weight: 700;
   }
 }
+
+/* Typography Scale */
+.display-lg {
+  font-size: clamp(2.5rem, 5vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.headline-md {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.label-md {
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Enterprise Gov-Tech Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #166534;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #166534;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary:hover {
+  background-color: #14532D;
+  border-color: #14532D;
+}
+
+.btn-primary:active {
+  transform: scale(0.99);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #FFFFFF;
+  color: #1F2937;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #D1D5DB;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.btn-secondary:hover {
+  background-color: #F7F8F5;
+  border-color: #9CA3AF;
+}
+
+.btn-secondary:active {
+  transform: scale(0.99);
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #65A30D;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #65A30D;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-accent:hover {
+  background-color: #4D7C0F;
+  border-color: #4D7C0F;
+}
+
+.btn-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #166534;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 0.625rem;
+  border: 1px solid #166534;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-nav-cta:hover {
+  background-color: #14532D;
+  border-color: #14532D;
+}
+
+/* Government-grade Flat Hairline Cards */
+.gov-card {
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gov-card:hover {
+  border-color: #9CA3AF;
+}
+
+.gov-card-static {
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.clay-card {
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.clay-card:hover {
+  border-color: #9CA3AF;
+}
+
+.card-mini-tile {
+  background-color: #FFFFFF;
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #D1D5DB;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.card-mini-tile:hover {
+  border-color: #9CA3AF;
+}
+
+/* Clean Form Elements */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  border: 1px solid #D1D5DB;
+  border-radius: 0.625rem;
+  background-color: #FFFFFF;
+  color: #1F2937;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #166534;
+  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.15);
+}
+
+/* ==========================================================================
+   Comprehensive Dark Mode Theme
+   ========================================================================== */
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Navbar Header */
+html.dark header {
+  background-color: rgba(11, 15, 23, 0.92) !important;
+  border-color: #1E293B !important;
+}
+
+/* Base Cards & Surface Containers */
+html.dark .gov-card,
+html.dark .gov-card-static,
+html.dark .clay-card,
+html.dark .card-mini-tile {
+  background-color: #141A26 !important;
+  border-color: #242E3F !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+html.dark .gov-card:hover,
+html.dark .clay-card:hover,
+html.dark .card-mini-tile:hover {
+  border-color: #38475F !important;
+}
+
+/* Button & interactive components */
+html.dark .btn-secondary {
+  background-color: #1A2232 !important;
+  color: #E2E8F0 !important;
+  border-color: #2D3A4F !important;
+}
+
+html.dark .btn-secondary:hover {
+  background-color: #242F44 !important;
+  border-color: #475569 !important;
+}
+
+/* Form Controls */
+html.dark input[type="text"],
+html.dark input[type="number"],
+html.dark select,
+html.dark textarea {
+  background-color: #111722 !important;
+  color: #F1F5F9 !important;
+  border-color: #2D3A4F !important;
+}
+
+html.dark input[type="text"]:focus,
+html.dark input[type="number"]:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  border-color: #22C55E !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Hardcoded Light Background Overrides (including partial opacity variants) */
+html.dark .bg-\[\#FEFDFB\],
+html.dark .bg-\[\#F7F8F5\],
+html.dark [class*="bg-slate-50"],
+html.dark [class*="bg-gray-50"],
+html.dark [class*="bg-zinc-50"] {
+  background-color: #0B0F17 !important;
+}
+
+html.dark .bg-\[\#FFFFFF\],
+html.dark .bg-\[\#ffffff\],
+html.dark .bg-white {
+  background-color: #141A26 !important;
+}
+
+html.dark [class*="bg-slate-100"],
+html.dark [class*="bg-gray-100"],
+html.dark [class*="bg-zinc-100"] {
+  background-color: #1C2433 !important;
+}
+
+html.dark [class*="bg-slate-200"],
+html.dark [class*="bg-gray-200"] {
+  background-color: #253043 !important;
+}
+
+/* Hardcoded Border Overrides (including partial opacity variants) */
+html.dark [class*="border-slate-200"],
+html.dark [class*="border-gray-200"],
+html.dark [class*="border-zinc-200"],
+html.dark .border-\[\#D1D5DB\],
+html.dark .border-\[\#d1d5db\] {
+  border-color: #242E3F !important;
+}
+
+html.dark [class*="border-slate-100"],
+html.dark [class*="border-gray-100"],
+html.dark .border-\[\#E5E7EB\],
+html.dark .border-\[\#e5e7eb\] {
+  border-color: #1E2738 !important;
+}
+
+html.dark [class*="border-slate-300"],
+html.dark [class*="border-gray-300"] {
+  border-color: #334155 !important;
+}
+
+/* Typography & Contrast in Dark Mode */
+html.dark .text-\[\#000000\],
+html.dark .text-\[\#1F2937\],
+html.dark .text-\[\#1f2937\],
+html.dark .text-slate-900,
+html.dark .text-gray-900,
+html.dark .text-zinc-900 {
+  color: #F8FAFC !important;
+}
+
+html.dark .text-slate-800,
+html.dark .text-gray-800,
+html.dark .text-slate-700,
+html.dark .text-gray-700 {
+  color: #CBD5E1 !important;
+}
+
+html.dark .text-slate-600,
+html.dark .text-gray-600,
+html.dark .text-zinc-600 {
+  color: #94A3B8 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-gray-500 {
+  color: #64748B !important;
+}
+
+/* Government Green Status Pill & Badges (including opacity variants) */
+html.dark [class*="bg-emerald-50"],
+html.dark [class*="bg-green-50"],
+html.dark .bg-\[\#F0FDF4\],
+html.dark .bg-\[\#f0fdf4\] {
+  background-color: rgba(22, 101, 52, 0.28) !important;
+}
+
+html.dark [class*="border-emerald-200"],
+html.dark [class*="border-emerald-300"],
+html.dark [class*="border-green-200"],
+html.dark .border-\[\#BBF7D0\],
+html.dark .border-\[\#bbf7d0\] {
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+html.dark [class*="bg-emerald-50"] p,
+html.dark [class*="bg-emerald-50"] span,
+html.dark .text-\[\#166534\],
+html.dark .text-\[\#15803D\],
+html.dark .text-green-800,
+html.dark .text-emerald-800,
+html.dark .text-green-700 {
+  color: #86EFAC !important;
+}
+
+/* Warning & Needs Review Pills/Banners (including opacity variants like bg-amber-50/80) */
+html.dark [class*="bg-amber-50"],
+html.dark [class*="bg-yellow-50"],
+html.dark .bg-\[\#FFFBEB\],
+html.dark .bg-\[\#fffbeb\] {
+  background-color: rgba(180, 83, 9, 0.22) !important;
+}
+
+html.dark [class*="border-amber-200"],
+html.dark [class*="border-amber-300"],
+html.dark [class*="border-yellow-200"],
+html.dark .border-\[\#FDE68A\],
+html.dark .border-\[\#fde68a\] {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+html.dark [class*="bg-amber-50"] p,
+html.dark [class*="bg-amber-50"] span,
+html.dark .text-\[\#B45309\],
+html.dark .text-amber-800,
+html.dark .text-yellow-800,
+html.dark .text-amber-700 {
+  color: #FDE68A !important;
+}
+
+/* Danger & Non-Compliance Pills/Banners (including opacity variants like bg-rose-50/70) */
+html.dark [class*="bg-rose-50"],
+html.dark [class*="bg-red-50"],
+html.dark .bg-\[\#FEF2F2\],
+html.dark .bg-\[\#fef2f2\] {
+  background-color: rgba(220, 38, 38, 0.22) !important;
+}
+
+html.dark [class*="border-rose-200"],
+html.dark [class*="border-rose-300"],
+html.dark [class*="border-red-200"],
+html.dark .border-\[\#FECACA\],
+html.dark .border-\[\#fecaca\] {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+html.dark [class*="bg-rose-50"] p,
+html.dark [class*="bg-rose-50"] span,
+html.dark .text-\[\#B91C1C\],
+html.dark .text-red-800,
+html.dark .text-rose-800,
+html.dark .text-red-700 {
+  color: #FCA5A5 !important;
+}
+
+/* Nav Link Hover States */
+html.dark .hover\:bg-\[\#F7F8F5\]:hover,
+html.dark [class*="hover:bg-slate-50"]:hover,
+html.dark [class*="hover:bg-gray-50"]:hover {
+  background-color: #1A2232 !important;
+  color: #F8FAFC !important;
+}
+
+/* Mobile Dropdown Menu */
+html.dark header .lg\:hidden.border-t {
+  background-color: #0F141E !important;
+  border-color: #1E2738 !important;
+}
+
+/* Modals & Dialog overlays */
+html.dark .bg-white\/95,
+html.dark .bg-white\/90,
+html.dark .bg-white\/80 {
+  background-color: rgba(17, 24, 38, 0.95) !important;
+}
+

@@ -14,25 +14,25 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   showIcon = true,
 }) => {
   const sizeClasses = {
-    sm: 'text-[11px] px-2.5 py-0.5 rounded-full font-bold tracking-tight',
-    md: 'text-xs px-3.5 py-1 rounded-full font-bold tracking-tight shadow-2xs',
-    lg: 'text-sm px-4.5 py-1.5 rounded-full font-extrabold tracking-tight shadow-2xs',
+    sm: 'text-xs px-2.5 py-0.5 rounded-full font-semibold',
+    md: 'text-xs sm:text-sm px-3 py-1 rounded-full font-semibold',
+    lg: 'text-sm sm:text-base px-4 py-1.5 rounded-full font-bold',
   };
 
   const iconSizes = {
-    sm: 'w-3 h-3',
-    md: 'w-3.5 h-3.5',
-    lg: 'w-4 h-4',
+    sm: 'w-3.5 h-3.5',
+    md: 'w-4 h-4',
+    lg: 'w-5 h-5',
   };
 
   if (status === 'COMPLIANT') {
     return (
       <span
         id="badge-compliant"
-        className={`inline-flex items-center gap-1.5 bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0] ${sizeClasses[size]}`}
+        className={`inline-flex items-center gap-1.5 bg-[#F0FDF4] dark:bg-emerald-950/50 text-[#15803D] dark:text-emerald-300 border border-[#BBF7D0] dark:border-emerald-800 whitespace-nowrap ${sizeClasses[size]}`}
       >
-        {showIcon && <CheckCircle2 className={`${iconSizes[size]} text-[#15803D] shrink-0`} />}
-        <span>COMPLIANT</span>
+        {showIcon && <CheckCircle2 className={`${iconSizes[size]} text-[#15803D] dark:text-emerald-400 shrink-0`} />}
+        <span>Compliant</span>
       </span>
     );
   }
@@ -41,10 +41,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     return (
       <span
         id="badge-needs-review"
-        className={`inline-flex items-center gap-1.5 bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] ${sizeClasses[size]}`}
+        className={`inline-flex items-center gap-1.5 bg-[#FFFBEB] dark:bg-amber-950/50 text-[#B45309] dark:text-amber-300 border border-[#FDE68A] dark:border-amber-800 whitespace-nowrap ${sizeClasses[size]}`}
       >
-        {showIcon && <AlertTriangle className={`${iconSizes[size]} text-[#B45309] shrink-0`} />}
-        <span>NEEDS REVIEW</span>
+        {showIcon && <AlertTriangle className={`${iconSizes[size]} text-[#B45309] dark:text-amber-400 shrink-0`} />}
+        <span>Needs Review</span>
       </span>
     );
   }
@@ -52,10 +52,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   return (
     <span
       id="badge-non-compliant"
-      className={`inline-flex items-center gap-1.5 bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] ${sizeClasses[size]}`}
+      className={`inline-flex items-center gap-1.5 bg-[#FEF2F2] dark:bg-rose-950/50 text-[#B91C1C] dark:text-rose-300 border border-[#FECACA] dark:border-rose-800 whitespace-nowrap ${sizeClasses[size]}`}
     >
-      {showIcon && <XCircle className={`${iconSizes[size]} text-[#B91C1C] shrink-0`} />}
-      <span>NON-COMPLIANT</span>
+      {showIcon && <XCircle className={`${iconSizes[size]} text-[#B91C1C] dark:text-rose-400 shrink-0`} />}
+      <span>Non-Compliant</span>
     </span>
   );
 };
@@ -68,13 +68,11 @@ interface FieldStatusPillProps {
 export const FieldStatusPill: React.FC<FieldStatusPillProps> = ({ status, confidence }) => {
   if (status === 'DETECTED') {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]">
-        <CheckCircle2 className="w-3 h-3 text-[#15803D]" />
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#F0FDF4] dark:bg-emerald-950/50 text-[#15803D] dark:text-emerald-300 border border-[#BBF7D0] dark:border-emerald-800">
+        <CheckCircle2 className="w-3.5 h-3.5 text-[#15803D] dark:text-emerald-400" />
         <span>Verified</span>
         {confidence !== undefined && (
-          <span className="text-[10px] text-[#15803D]/80 font-mono ml-0.5">
-            ({confidence.toFixed(0)}%)
-          </span>
+          <span className="ml-1 text-[10px] text-[#15803D]/80 dark:text-emerald-300/80 font-mono font-medium">({confidence.toFixed(0)}%)</span>
         )}
       </span>
     );
@@ -82,13 +80,11 @@ export const FieldStatusPill: React.FC<FieldStatusPillProps> = ({ status, confid
 
   if (status === 'LOW_CONFIDENCE') {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A]">
-        <AlertTriangle className="w-3 h-3 text-[#B45309]" />
-        <span>Review Required</span>
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#FFFBEB] dark:bg-amber-950/50 text-[#B45309] dark:text-amber-300 border border-[#FDE68A] dark:border-amber-800">
+        <AlertTriangle className="w-3.5 h-3.5 text-[#B45309] dark:text-amber-400" />
+        <span>Low Confidence</span>
         {confidence !== undefined && (
-          <span className="text-[10px] text-[#B45309]/80 font-mono ml-0.5">
-            ({confidence.toFixed(0)}%)
-          </span>
+          <span className="ml-1 text-[10px] text-[#B45309]/80 dark:text-amber-300/80 font-mono font-medium">({confidence.toFixed(0)}%)</span>
         )}
       </span>
     );
@@ -96,16 +92,16 @@ export const FieldStatusPill: React.FC<FieldStatusPillProps> = ({ status, confid
 
   if (status === 'NOT_CAPTURED') {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
-        <HelpCircle className="w-3 h-3 text-[#1D4ED8]" />
-        <span>Not Captured / Insufficient Evidence</span>
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+        <HelpCircle className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+        <span>Not Captured / Other Angle</span>
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]">
-      <XCircle className="w-3 h-3 text-[#B91C1C]" />
+    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#FEF2F2] dark:bg-rose-950/50 text-[#B91C1C] dark:text-rose-300 border border-[#FECACA] dark:border-rose-800">
+      <XCircle className="w-3.5 h-3.5 text-[#B91C1C] dark:text-rose-400" />
       <span>Missing / Non-Compliant</span>
     </span>
   );

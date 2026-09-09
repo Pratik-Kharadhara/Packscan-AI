@@ -415,12 +415,15 @@ async def scan_package(
             remedy_msg = "Capture the manufacturer/address panel for verification."
         else:
             explanation = check.reason if check else "Declaration not verified."
-            warning_msg = None if is_compliant_pass else f"Mandatory declaration absent under {meta['legalRule']}"
-            remedy_msg = (
-                None
-                if is_compliant_pass
-                else f"Ensure plain and conspicuous declaration conforming to {meta['legalRule']}."
-            )
+            if is_compliant_pass:
+                warning_msg = None
+                remedy_msg = None
+            elif check and check.status == CheckStatus.REVIEW:
+                warning_msg = f"Declaration not confirmed on photographed surface under {meta['legalRule']}. Manual verification recommended."
+                remedy_msg = f"Capture the relevant panel showing declarations for verification under {meta['legalRule']}."
+            else:
+                warning_msg = f"Mandatory declaration absent or non-compliant under {meta['legalRule']}."
+                remedy_msg = f"Ensure plain and conspicuous declaration conforming to {meta['legalRule']}."
 
         level2_valid = bool(is_found and check and check.status == CheckStatus.PASS)
 

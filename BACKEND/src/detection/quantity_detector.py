@@ -12,6 +12,7 @@ from src.detection.content_validator import (
     is_plausible_net_quantity,
 )
 from src.detection.patterns import compile_any, load_detection_patterns
+from src.detection.semantic_associator import SemanticAssociator
 from src.ocr.ocr_service import OCRResult
 
 
@@ -38,7 +39,38 @@ class QuantityDetector(BaseDetector):
         self._when_packed = re.compile(patterns.get("when_packed_pattern", r"\bwhen\s+packed\b"), re.IGNORECASE)
 
     def detect(self, ocr_result: OCRResult) -> DetectedField:
-        # 1. Search grouped lines and stacked key-value pairs first
+        # 1. First run 2D semantic label-to-value association
+        associations = SemanticAssociator().associate(ocr_result)
+        qty_assoc = associations.get("net_quantity")
+        if qty_assoc:
+            val = qty_assoc.value
+            num = qty_assoc.value_match.extra.get("amount", "")
+            unit = qty_assoc.value_match.extra.get("unit", "")
+            first_det = qty_assoc.value_match.detection
+            note = "Net-quantity context and valid unit detected via semantic association."
+            sub_fields: dict[str, str] = {
+                "amount": str(num),
+                "unit": str(unit),
+                "label": qty_assoc.label_text,
+                "when_packed": "false",
+                "detection_method": "semantic_association",
+            }
+            return detected_field(
+                self.field_name,
+                first_det,
+                val,
+                note,
+                confidence=qty_assoc.confidence,
+                source_line=qty_assoc.label_match.detection if qty_assoc.label_match else first_det,
+                raw_text=f"{qty_assoc.label_text} {val}",
+                normalized_text=f"{qty_assoc.label_text} {val}",
+                matched_pattern="context_quantity_semantic",
+                sub_fields=sub_fields,
+                rule_reference="Rule 6(1)(c)",
+                bounding_boxes=qty_assoc.bounding_boxes,
+            )
+
+        # 2. Search grouped lines and stacked key-value pairs as fallback
         candidates = list(ocr_result.grouped_lines) + list(ocr_result.stacked_lines)
 
         for line in candidates:

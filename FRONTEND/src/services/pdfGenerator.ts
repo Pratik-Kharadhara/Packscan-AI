@@ -12,19 +12,20 @@ export function downloadPdfReport(scan: ScanResult): void {
   let y = 14;
 
   // Header Banner Background
-  doc.setFillColor(15, 23, 42); // slate-900
+  // Top Banner
+  doc.setFillColor(22, 101, 52); // Forest Green (#166534)
   doc.rect(0, 0, pageWidth, 26, 'F');
 
-  // Top GovTech / SIH Bar
+  // Top GovTech Header
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.text('PACKSCAN AI — DIGITAL COMPLIANCE SCREENING REPORT', 14, 11);
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(148, 163, 184); // slate-400
-  doc.text('Smart India Hackathon 2026 | Team Vision Forge | PS ID: SIH26034', 14, 17);
+  doc.setFontSize(8.5);
+  doc.setTextColor(219, 234, 254); // light tint
+  doc.text('PackScan AI Screening Engine • Legal Metrology Division Audit Record', 14, 17);
   doc.text('Legal Metrology (Packaged Commodities) Rules, 2011 Compliance Audit', 14, 22);
 
   y = 34;
@@ -174,7 +175,7 @@ export function downloadPdfReport(scan: ScanResult): void {
 
   y += 24;
 
-  // Regulatory Basis & Legal Positioning Disclaimer (Verbatim requirement from prompt & SIH PDF)
+  // Regulatory Basis & Legal Positioning Disclaimer (Legal Metrology PCR 2011)
   doc.setDrawColor(245, 158, 11);
   doc.setFillColor(254, 252, 232); // amber-50
   doc.roundedRect(14, y, pageWidth - 28, 22, 1.5, 1.5, 'FD');
@@ -210,12 +211,12 @@ export function downloadPdfReport(scan: ScanResult): void {
   doc.setFontSize(7);
   doc.setTextColor(100, 116, 139);
   doc.text('Designated Legal Metrology Inspector / QA Auditor', 16, y);
-  doc.text('Digitally Verified via PackScan AI Engine v2.4 (SIH26034)', 110, y);
+  doc.text('Digitally Verified via PackScan AI Screening Engine v2.4 (PCR 2011)', 110, y);
 
   // Footer page marker
   doc.setFontSize(6.5);
   doc.setTextColor(148, 163, 184);
-  doc.text('Page 1 of 1 • Vision Forge SIH 2026 • Confidential Statutory Inspection Record', 14, 287);
+  doc.text('Page 1 of 1 • PackScan AI • Statutory Compliance Inspection Record', 14, 287);
 
   // Trigger download
   doc.save(`PackScan_Compliance_Report_${scan.id}.pdf`);

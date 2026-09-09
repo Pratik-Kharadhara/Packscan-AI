@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BoundingBox, FieldKey, PackagePanelImage, RawOcrBox } from '../../types';
-import { Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Crosshair, Layers } from 'lucide-react';
+import { BoundingBox, RawOcrBox, FieldKey, PackagePanelImage } from '../../types';
+import { Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Crosshair, Layers, FileText } from 'lucide-react';
 
 interface AnnotatedImageProps {
   imageUrl: string;
@@ -24,7 +24,7 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   imageQualityScore,
 }) => {
   const [showBoxes, setShowBoxes] = useState(true);
-  const [displayMode, setDisplayMode] = useState<'compliance' | 'all_ocr'>('compliance');
+  const [viewMode, setViewMode] = useState<'compliance' | 'all_ocr'>('compliance');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [hoveredBoxId, setHoveredBoxId] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -33,177 +33,249 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   const currentPanel = hasMultiplePanels && images ? images[activeImageIndex] : null;
   const activeImageUrl = currentPanel?.url || imageUrl;
 
-  // STRICT PANEL ISOLATION: Never borrow Panel 1 boxes for another panel
-  const panelComplianceBoxes: BoundingBox[] = hasMultiplePanels
-    ? (currentPanel?.boundingBoxes || [])
-    : (boundingBoxes || []);
+  // STRICT PANEL SEPARATION:
+  // If inspecting a specific panel, use that panel's boxes only (or empty array).
+  // Never borrow Panel 1 or global boxes for other panels.
+  const currentBoxes: BoundingBox[] = hasMultiplePanels
+    ? (currentPanel?.boundingBoxes ?? [])
+    : (boundingBoxes ?? []);
 
-  const panelRawOcrBoxes: RawOcrBox[] = hasMultiplePanels
-    ? (currentPanel?.rawOcrBoxes || [])
-    : (rawOcrBoxes || []);
+  const currentRawOcrBoxes: RawOcrBox[] = hasMultiplePanels
+    ? (currentPanel?.rawOcrBoxes ?? [])
+    : (rawOcrBoxes ?? []);
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.25, 2.5));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.25, 0.75));
   const handleResetZoom = () => setZoomLevel(1);
 
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg flex flex-col h-full">
-      {/* Top Toolbar */}
-      <div className="bg-slate-950/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-xs text-slate-300 flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <Crosshair className="w-4 h-4 text-[#86EFAC]" />
-          <span className="font-extrabold text-white text-[11px] tracking-wider uppercase">
-            OCR Bounding Box Localization
-          </span>
-          {hasMultiplePanels && images && (
-            <span className="bg-[#166534]/50 text-[#BBF7D0] px-2 py-0.5 rounded text-[10px] font-bold border border-[#166534]">
-              Panel {activeImageIndex + 1} of {images.length}
-            </span>
-          )}
+    <div className="flex flex-col lg:flex-row gap-4 h-full w-full min-h-0 select-none">
+      {/* ================= LEFT BOX: REST OF THE BUTTONS ================= */}
+      <div className="w-full lg:w-80 xl:w-96 shrink-0 bg-slate-900 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between overflow-y-auto shadow-lg space-y-4">
+        {/* 1. Angles Section */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-xs font-black uppercase tracking-wider text-white">
+                Package Angles
+              </h3>
+            </div>
+            {hasMultiplePanels && (
+              <span className="text-[10px] font-mono font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                {images?.length} Panels
+              </span>
+            )}
+          </div>
+
+          {/* Big Clickable Angle Buttons Stack */}
+          <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+            {hasMultiplePanels && images ? (
+              images.map((panel, idx) => {
+                const isSelected = activeImageIndex === idx;
+                const boxCount = panel.boundingBoxes?.length || 0;
+                const rawCount = panel.rawOcrBoxes?.length || 0;
+                return (
+                  <button
+                    type="button"
+                    key={panel.id}
+                    onClick={() => {
+                      setActiveImageIndex(idx);
+                      setZoomLevel(1);
+                    }}
+                    className={`w-full text-left p-3 rounded-xl border transition-all duration-150 flex items-center justify-between gap-2.5 cursor-pointer select-none ${
+                      isSelected
+                        ? 'bg-emerald-700 text-white border-emerald-400 ring-2 ring-emerald-400/50 shadow-md scale-[1.01]'
+                        : 'bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span
+                        className={`w-6 h-6 rounded-lg text-xs flex items-center justify-center font-mono font-black shrink-0 ${
+                          isSelected
+                            ? 'bg-white text-emerald-900 font-bold'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {idx + 1}
+                      </span>
+                      <span className="text-xs font-bold truncate">
+                        {panel.label}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md shrink-0 ${
+                        isSelected
+                          ? 'bg-emerald-950 text-emerald-200 border border-emerald-500/50'
+                          : 'bg-slate-800 text-slate-400 border border-slate-700'
+                      }`}
+                    >
+                      {viewMode === 'compliance' ? `${boxCount} boxes` : `${rawCount} OCR`}
+                    </span>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-lg bg-emerald-900/80 text-emerald-300 flex items-center justify-center font-mono font-bold text-xs">
+                  1
+                </span>
+                <span className="font-bold">Principal Display Surface</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Display Mode Toggle */}
-        <div className="flex items-center bg-slate-900 rounded-lg p-0.5 border border-slate-800">
-          <button
-            type="button"
-            id="btn-mode-compliance"
-            onClick={() => setDisplayMode('compliance')}
-            className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${
-              displayMode === 'compliance'
-                ? 'bg-[#166534] text-white shadow-xs'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Compliance Declarations ({panelComplianceBoxes.length})
-          </button>
-          <button
-            type="button"
-            id="btn-mode-all-ocr"
-            onClick={() => setDisplayMode('all_ocr')}
-            className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${
-              displayMode === 'all_ocr'
-                ? 'bg-cyan-700 text-white shadow-xs'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            All OCR Detections ({panelRawOcrBoxes.length})
-          </button>
+        {/* 2. Overlay Layer Mode */}
+        <div className="space-y-2 pt-2 border-t border-slate-800/80">
+          <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
+            Overlay Layer Mode
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setViewMode('compliance')}
+              className={`px-3 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                viewMode === 'compliance'
+                  ? 'bg-emerald-700 text-white ring-1 ring-emerald-400 shadow-xs'
+                  : 'bg-slate-950/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
+              }`}
+            >
+              <Crosshair className="w-3.5 h-3.5" />
+              <span>Declarations</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode('all_ocr')}
+              className={`px-3 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                viewMode === 'all_ocr'
+                  ? 'bg-cyan-700 text-white ring-1 ring-cyan-400 shadow-xs'
+                  : 'bg-slate-950/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>All OCR</span>
+            </button>
+          </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-2">
+        {/* 3. View & Zoom Controls */}
+        <div className="space-y-2 pt-2 border-t border-slate-800/80">
+          <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
+            Inspection Controls
+          </label>
+
+          {/* Toggle Boxes ON / OFF */}
           <button
             type="button"
             onClick={() => setShowBoxes(!showBoxes)}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1.5 transition-colors ${
+            className={`w-full py-2.5 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
               showBoxes
-                ? 'bg-[#166534] text-white'
-                : 'bg-slate-800 text-slate-400 hover:text-white'
+                ? 'bg-emerald-800 hover:bg-emerald-700 text-white border border-emerald-600 shadow-xs'
+                : 'bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            {showBoxes ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            <span>{showBoxes ? 'Boxes ON' : 'Boxes OFF'}</span>
+            {showBoxes ? <Eye className="w-4 h-4 text-emerald-300" /> : <EyeOff className="w-4 h-4" />}
+            <span>{showBoxes ? 'Overlay Boxes: ON' : 'Overlay Boxes: OFF'}</span>
           </button>
 
-          <div className="h-4 w-px bg-slate-800 mx-1"></div>
+          {/* Zoom controls row */}
+          <div className="flex items-center justify-between gap-1.5 bg-slate-950/90 p-1.5 rounded-xl border border-slate-800">
+            <button
+              type="button"
+              onClick={handleZoomOut}
+              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              title="Zoom Out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
 
-          <button
-            type="button"
-            onClick={handleZoomOut}
-            className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </button>
-          <span className="text-[10px] font-mono text-slate-400 w-9 text-center">
-            {Math.round(zoomLevel * 100)}%
-          </span>
-          <button
-            type="button"
-            onClick={handleZoomIn}
-            className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
-            title="Zoom In"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={handleResetZoom}
-            className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
-            title="Reset Zoom"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
+            <span className="text-xs font-mono font-black text-slate-300 px-2 min-w-[52px] text-center select-none">
+              {Math.round(zoomLevel * 100)}%
+            </span>
+
+            <button
+              type="button"
+              onClick={handleZoomIn}
+              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              title="Zoom In"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleResetZoom}
+              className="py-1.5 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              title="Reset Zoom"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* 4. Quality & Summary Info */}
+        <div className="pt-2 border-t border-slate-800/80 bg-slate-950/60 p-3 rounded-xl border border-slate-800 text-xs space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400 text-[11px]">Image Quality:</span>
+            <span className="text-emerald-400 font-mono font-black">{imageQualityScore}%</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400 text-[11px]">
+              {viewMode === 'compliance' ? 'Statutory Boxes:' : 'OCR Detections:'}
+            </span>
+            <span className="text-white font-mono font-black">
+              {viewMode === 'compliance' ? currentBoxes.length : currentRawOcrBoxes.length}
+            </span>
+          </div>
+          <p className="text-[10px] text-slate-500 pt-1 leading-relaxed border-t border-slate-800/60">
+            {viewMode === 'compliance'
+              ? 'Click any box on the image to inspect statutory declaration rules.'
+              : 'Hover any detection token to view raw OCR extracted string.'}
+          </p>
         </div>
       </div>
 
-      {/* Multi-Panel Surface Switcher Bar (if multi-angle scan) */}
-      {hasMultiplePanels && images && (
-        <div className="bg-slate-950 px-3 py-2 border-b border-slate-800/80 flex items-center gap-2 overflow-x-auto">
-          <div className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 shrink-0 mr-1">
-            <Layers className="w-3 h-3 text-[#86EFAC]" />
-            <span>Panels:</span>
+      {/* ================= RIGHT BOX: IMAGE ================= */}
+      <div className="flex-1 min-w-0 h-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex flex-col relative shadow-lg">
+        {/* Top Header Bar of Image Box */}
+        <div className="bg-slate-950/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-xs text-slate-300">
+          <div className="flex items-center gap-2 min-w-0">
+            <Crosshair className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="font-bold text-white text-xs truncate">
+              {currentPanel ? currentPanel.label : productName}
+            </span>
+            {hasMultiplePanels && (
+              <span className="bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-800 shrink-0">
+                Angle {activeImageIndex + 1} of {images?.length}
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-1.5 flex-nowrap">
-            {images.map((panel, idx) => {
-              const isSelected = activeImageIndex === idx;
-              const compCount = panel.boundingBoxes ? panel.boundingBoxes.length : 0;
-              const rawCount = panel.rawOcrBoxes ? panel.rawOcrBoxes.length : 0;
-              return (
-                <button
-                  type="button"
-                  key={panel.id}
-                  onClick={() => {
-                    setActiveImageIndex(idx);
-                    setZoomLevel(1);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-                    isSelected
-                      ? 'bg-[#166534] text-white shadow-2xs ring-1 ring-[#86EFAC]'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800'
-                  }`}
-                >
-                  <span
-                    className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-mono ${
-                      isSelected ? 'bg-white text-[#166534] font-black' : 'bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {idx + 1}
-                  </span>
-                  <span>{panel.label}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
-                      isSelected ? 'bg-[#14532D] text-[#BBF7D0]' : 'bg-slate-800 text-slate-500'
-                    }`}
-                  >
-                    {displayMode === 'compliance' ? `${compCount} compliance` : `${rawCount} OCR`}
-                  </span>
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-2 shrink-0 font-mono text-[11px] text-slate-400">
+            <span>Scale: {Math.round(zoomLevel * 100)}%</span>
           </div>
         </div>
-      )}
 
-      {/* Main Image Stage Container */}
-      <div className="relative flex-1 min-h-[440px] max-h-[580px] bg-slate-950 flex items-center justify-center p-4 overflow-auto">
-        <div
-          className="relative transition-transform duration-200 ease-out origin-center"
-          style={{ transform: `scale(${zoomLevel})` }}
-        >
-          {/* Base Product Label Image */}
-          <img
-            src={activeImageUrl}
-            alt={productName}
-            className="max-h-[500px] w-auto rounded-lg shadow-2xl select-none block border border-slate-800"
-          />
+        {/* Main Image Stage Container */}
+        <div className="relative flex-1 min-h-[440px] bg-slate-950 flex items-center justify-center p-4 overflow-auto">
+          <div
+            className="relative transition-transform duration-200 ease-out origin-center"
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            {/* Base Product Label Image */}
+            <img
+              src={activeImageUrl}
+              alt={productName}
+              className="max-h-[calc(88vh-140px)] max-w-full w-auto rounded-lg shadow-2xl select-none block border border-slate-800"
+            />
 
-          {/* SVG Overlay for Bounding Boxes */}
-          {showBoxes && (
-            <div className="absolute inset-0 pointer-events-none">
-              {displayMode === 'compliance' ? (
-                panelComplianceBoxes.map((box) => {
+            {/* SVG/HTML Overlay for Bounding Boxes */}
+            {showBoxes && viewMode === 'compliance' && (
+              <div className="absolute inset-0 pointer-events-none">
+                {currentBoxes.map((box) => {
                   const isFieldActive = activeFieldKey === box.fieldKey;
                   const isHovered = hoveredBoxId === box.id;
 
@@ -213,7 +285,7 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
                   if (box.status === 'LOW_CONFIDENCE') {
                     borderClass = 'border-amber-400 bg-amber-500/20 text-amber-300';
                     tagColor = 'bg-amber-600 text-white';
-                  } else if (box.status === 'NOT_DETECTED') {
+                  } else if (box.status === 'NOT_DETECTED' || box.status === 'NOT_CAPTURED') {
                     borderClass = 'border-rose-400 bg-rose-500/20 text-rose-300';
                     tagColor = 'bg-rose-600 text-white';
                   }
@@ -248,11 +320,15 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
                       </div>
                     </div>
                   );
-                })
-              ) : (
-                panelRawOcrBoxes.map((box) => {
-                  const isHovered = hoveredBoxId === box.id;
+                })}
+              </div>
+            )}
 
+            {/* All OCR Raw Detections Overlay */}
+            {showBoxes && viewMode === 'all_ocr' && (
+              <div className="absolute inset-0 pointer-events-none">
+                {currentRawOcrBoxes.map((box) => {
+                  const isHovered = hoveredBoxId === box.id;
                   return (
                     <div
                       key={box.id}
@@ -264,55 +340,26 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
                         width: `${box.width}%`,
                         height: `${box.height}%`,
                       }}
-                      className={`absolute border rounded pointer-events-auto transition-all duration-150 border-cyan-400/80 bg-cyan-500/10 text-cyan-200 ${
+                      className={`absolute border rounded pointer-events-auto cursor-pointer transition-all duration-100 border-cyan-400/80 bg-cyan-500/10 text-cyan-200 ${
                         isHovered
-                          ? 'ring-2 ring-cyan-200 scale-[1.02] shadow-lg z-20 bg-cyan-500/25'
-                          : 'z-10 opacity-85 hover:opacity-100'
+                          ? 'ring-2 ring-cyan-200 bg-cyan-500/30 scale-[1.02] shadow-lg z-30'
+                          : 'z-10 opacity-80 hover:opacity-100'
                       }`}
+                      title={`"${box.text}" (${box.confidence.toFixed(0)}% conf)`}
                     >
-                      <div className="absolute -top-5 left-0 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-tight whitespace-nowrap shadow-xs flex items-center gap-1 bg-cyan-800 text-cyan-100">
-                        <span>&ldquo;{box.text}&rdquo;</span>
-                        <span className="opacity-75 font-normal">[{box.confidence.toFixed(0)}%]</span>
-                      </div>
+                      {isHovered && (
+                        <div className="absolute -top-5 left-0 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-tight whitespace-nowrap shadow-xs flex items-center gap-1 bg-cyan-700 text-white z-40">
+                          <span>{box.text}</span>
+                          <span className="opacity-80">[{box.confidence.toFixed(0)}%]</span>
+                        </div>
+                      )}
                     </div>
                   );
-                })
-              )}
-            </div>
-          )}
+                })}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-
-      {/* Footer Info Bar */}
-      <div className="bg-slate-950 px-4 py-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-        <div className="flex items-center gap-3">
-          <span>
-            Quality Score: <strong className="text-emerald-400 font-mono">{imageQualityScore}%</strong>
-          </span>
-          <span>•</span>
-          <span>
-            Detected Regions:{' '}
-            <strong className="text-white font-mono">
-              {displayMode === 'compliance' ? panelComplianceBoxes.length : panelRawOcrBoxes.length}
-            </strong>
-            <span className="text-slate-500 ml-1">
-              ({displayMode === 'compliance' ? 'Statutory Declarations' : 'Raw OCR Detections'})
-            </span>
-          </span>
-          {hasMultiplePanels && images && (
-            <>
-              <span>•</span>
-              <span className="text-blue-400 font-semibold">
-                Inspecting: {images[activeImageIndex].label}
-              </span>
-            </>
-          )}
-        </div>
-        <span className="text-[10px] text-slate-500">
-          {displayMode === 'compliance'
-            ? 'Click any statutory box to inspect rule verification'
-            : 'Hover any raw OCR token to inspect bounding text & confidence'}
-        </span>
       </div>
     </div>
   );
