@@ -289,21 +289,21 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             <div
               className={`p-3.5 rounded-xl border flex items-start gap-3 transition-colors ${
                 scan.finalStatus === 'COMPLIANT'
-                  ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950'
+                  ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-700/60 dark:text-emerald-200'
                   : scan.finalStatus === 'NEEDS_REVIEW'
-                  ? 'bg-amber-50/80 border-amber-300 text-amber-950'
-                  : 'bg-rose-50/70 border-rose-300 text-rose-950'
+                  ? 'bg-amber-50/80 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:border-amber-700/60 dark:text-amber-200'
+                  : 'bg-rose-50/70 border-rose-300 text-rose-950 dark:bg-rose-950/40 dark:border-rose-700/60 dark:text-rose-200'
               }`}
             >
               <div className="shrink-0 mt-0.5">
                 {scan.finalStatus === 'COMPLIANT' && (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-700" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                 )}
                 {scan.finalStatus === 'NEEDS_REVIEW' && (
-                  <AlertTriangle className="w-5 h-5 text-amber-700" />
+                  <AlertTriangle className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                 )}
                 {scan.finalStatus === 'NON_COMPLIANT' && (
-                  <XCircle className="w-5 h-5 text-rose-700" />
+                  <XCircle className="w-5 h-5 text-rose-700 dark:text-rose-400" />
                 )}
               </div>
 
@@ -319,16 +319,16 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                   <span
                     className={`text-[10px] font-mono font-bold px-2 py-0.2 rounded-full uppercase tracking-wider ${
                       scan.finalStatus === 'COMPLIANT'
-                        ? 'bg-emerald-200/80 text-emerald-900'
+                        ? 'bg-emerald-200/80 text-emerald-900 dark:bg-emerald-900/80 dark:text-emerald-200'
                         : scan.finalStatus === 'NEEDS_REVIEW'
-                        ? 'bg-amber-200/80 text-amber-900'
-                        : 'bg-rose-200/80 text-rose-900'
+                        ? 'bg-amber-200/80 text-amber-900 dark:bg-amber-900/80 dark:text-amber-200'
+                        : 'bg-rose-200/80 text-rose-900 dark:bg-rose-900/80 dark:text-rose-200'
                     }`}
                   >
                     {scan.finalStatus.replace('_', ' ')}
                   </span>
                 </div>
-                <p className="text-xs text-slate-700 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">
                   {scan.summaryNote}
                 </p>
               </div>

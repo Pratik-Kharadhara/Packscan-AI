@@ -28,6 +28,29 @@ export function App() {
   const [batchResults, setBatchResults] = useState<ScanResult[]>([]);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
 
+  // Dark mode state persisted in localStorage (defaults to false / light mode)
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('packscan_dark_theme') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Sync dark class on documentElement
+  useEffect(() => {
+    try {
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('packscan_dark_theme', String(darkMode));
+    } catch (e) {
+      console.warn('Failed to save dark mode setting:', e);
+    }
+  }, [darkMode]);
+
   // Persistent scan history with localStorage hydration
   const [scanHistory, setScanHistory] = useState<ScanResult[]>(() => {
     try {
@@ -191,9 +214,15 @@ export function App() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FEFDFB] text-[#000000] selection:bg-[#CBD810] selection:text-[#000000] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#FEFDFB] text-[#000000] selection:bg-[#CBD810] selection:text-[#000000] font-sans transition-colors duration-200">
       {/* Top Main Navigation */}
-      <Navbar activePage={activePage} onNavigate={setActivePage} />
+      <Navbar
+        activePage={activePage}
+        onNavigate={setActivePage}
+        hasActiveResult={!!currentScan}
+        darkMode={darkMode}
+        onToggleDark={() => setDarkMode((prev) => !prev)}
+      />
 
       {/* Main Content Area with generous bottom scroll clearance */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-56">
@@ -224,13 +253,13 @@ export function App() {
         {activePage === 'scan' && (
           <div className="space-y-6">
             <div className="text-center max-w-2xl mx-auto mb-2">
-              <span className="text-xs font-extrabold text-blue-600 uppercase tracking-wider">
+              <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                 Digital Inspection Portal
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
                 Package Compliance Scanner
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Upload single or multiple packaging photos (Front, Back &amp; Side surfaces, or batch items) or test verified demonstration presets.
               </p>
             </div>
@@ -276,17 +305,17 @@ export function App() {
       {/* Bottom Quick Dock - Hidden when inspector modal is open */}
       {!isInspectorOpen && (
         <div className="fixed bottom-2 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-[900] pt-6 pb-2 px-4 group pointer-events-auto select-none">
-          <div className="relative transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-bottom transform scale-[0.74] sm:scale-[0.80] opacity-80 translate-y-3 group-hover:scale-100 group-hover:opacity-100 group-hover:translate-y-0 backdrop-blur-xl bg-white/75 group-hover:bg-white/95 rounded-[30px] shadow-[0_6px_25px_rgba(0,0,0,0.10)] group-hover:shadow-[0_16px_48px_rgba(0,0,0,0.22)] border border-white/80 px-2 py-1.5 will-change-transform">
+          <div className="relative transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-bottom transform scale-[0.74] sm:scale-[0.80] opacity-80 translate-y-3 group-hover:scale-100 group-hover:opacity-100 group-hover:translate-y-0 backdrop-blur-xl bg-white/75 group-hover:bg-white/95 dark:bg-[#141A26]/80 dark:group-hover:bg-[#141A26]/95 rounded-[30px] shadow-[0_6px_25px_rgba(0,0,0,0.10)] group-hover:shadow-[0_16px_48px_rgba(0,0,0,0.22)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/80 dark:border-[#242E3F] px-2 py-1.5 will-change-transform">
             {/* Subtle expand handle indicator */}
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-slate-400/40 group-hover:opacity-0 transition-opacity duration-200 pointer-events-none" />
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-slate-400/40 dark:bg-slate-600/40 group-hover:opacity-0 transition-opacity duration-200 pointer-events-none" />
             <PillNav
               logo={<PackScanLogo size="sm" showText={false} variant="icon-only" />}
               items={dockItems}
               activeHref={activePage}
-              baseColor="#0F2417"
-              pillColor="#FFFFFF"
+              baseColor={darkMode ? "#166534" : "#0F2417"}
+              pillColor={darkMode ? "#1C2433" : "#FFFFFF"}
               hoveredPillTextColor="#FFFFFF"
-              pillTextColor="#374151"
+              pillTextColor={darkMode ? "#CBD5E1" : "#374151"}
               initialLoadAnimation={false}
               onSelect={(href) => {
                 setActivePage(href as typeof activePage);

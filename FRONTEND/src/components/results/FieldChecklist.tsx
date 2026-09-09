@@ -78,20 +78,20 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
   const allExpanded = expandedKeys.size === ORDERED_FIELD_KEYS.length;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden" id="field-checklist-container">
+    <div className="bg-white dark:bg-[#141A26] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden" id="field-checklist-container">
       {/* Section Header Strip */}
-      <div className="px-5 py-4 border-b border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div className="px-5 py-4 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div>
           <div className="flex items-center gap-2">
-            <Scale className="w-4 h-4 text-emerald-800" />
-            <h2 className="text-sm font-extrabold text-slate-900 tracking-tight">
+            <Scale className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
+            <h2 className="text-sm font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
               Mandatory Declarations Audit
             </h2>
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               6 of 6 Evaluated
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             Legal Metrology (Packaged Commodities) Rules, 2011 • Rule 6 Compliance Checklist
           </p>
         </div>
@@ -99,17 +99,17 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
         {/* Quick summary tally & Expand All toggle */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono">
-            <span className="text-emerald-700 font-bold">{detectedCount} Detected</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-bold">{detectedCount} Detected</span>
             {reviewCount > 0 && (
               <>
-                <span className="text-slate-300">•</span>
-                <span className="text-amber-700 font-bold">{reviewCount} Review</span>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
+                <span className="text-amber-700 dark:text-amber-400 font-bold">{reviewCount} Review</span>
               </>
             )}
             {missingCount > 0 && (
               <>
-                <span className="text-slate-300">•</span>
-                <span className="text-rose-700 font-bold">{missingCount} Missing</span>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
+                <span className="text-rose-700 dark:text-rose-400 font-bold">{missingCount} Missing</span>
               </>
             )}
           </div>
@@ -117,7 +117,7 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
           <button
             type="button"
             onClick={handleExpandAll}
-            className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 underline underline-offset-2 transition-colors cursor-pointer"
+            className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 underline underline-offset-2 transition-colors cursor-pointer"
           >
             {allExpanded ? 'Collapse All' : 'Expand All'}
           </button>
@@ -125,7 +125,7 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
       </div>
 
       {/* Accordion Rows List */}
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-slate-100 dark:divide-slate-800">
         {ORDERED_FIELD_KEYS.map((key, index) => {
           const field = fields[key];
           if (!field) return null;
@@ -139,10 +139,10 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
           const isMissing = field.status === 'NOT_DETECTED';
 
           const statusBorder = isSelected
-            ? 'ring-2 ring-emerald-600 ring-inset bg-emerald-50/20'
+            ? 'ring-2 ring-emerald-600 ring-inset bg-emerald-50/20 dark:bg-emerald-950/30'
             : isExpanded
-            ? 'bg-slate-50/40'
-            : 'hover:bg-slate-50/70';
+            ? 'bg-slate-50/40 dark:bg-slate-900/40'
+            : 'hover:bg-slate-50/70 dark:hover:bg-slate-900/60';
 
           return (
             <div
@@ -161,17 +161,17 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
                   {/* Status Icon */}
                   <div className="shrink-0">
                     {isDetected && (
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                     )}
                     {isReview && (
-                      <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                      <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-950/60 flex items-center justify-center text-amber-700 dark:text-amber-400">
                         <AlertTriangle className="w-4 h-4" />
                       </div>
                     )}
                     {isMissing && (
-                      <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-rose-700">
+                      <div className="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center text-rose-700 dark:text-rose-400">
                         <XCircle className="w-4 h-4" />
                       </div>
                     )}
@@ -180,20 +180,20 @@ export const FieldChecklist: React.FC<FieldChecklistProps> = ({
                   {/* Field Number + Name + Rule Citation */}
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-mono font-bold text-slate-400">
+                      <span className="text-[11px] font-mono font-bold text-slate-400 dark:text-slate-500">
                         0{index + 1}.
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-900 transition-colors">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-emerald-900 dark:group-hover:text-emerald-400 transition-colors">
                         {field.title}
                       </span>
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                         {field.legalRule}
                       </span>
                     </div>
 
                     {/* Collapsed single-line hint for non-detected or warnings */}
                     {!isExpanded && (isReview || isMissing) && (
-                      <p className="text-[11px] text-amber-700 font-medium truncate mt-0.5">
+                      <p className="text-[11px] text-amber-700 dark:text-amber-400 font-medium truncate mt-0.5">
                         {field.warning || field.explanation}
                       </p>
                     )}
