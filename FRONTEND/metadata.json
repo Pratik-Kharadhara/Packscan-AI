@@ -1,6 +1,6 @@
 {
-  "name": "PackScan.Ai",
-  "description": "Automated Package Compliance Verification System for India's Legal Metrology (Packaged Commodities) Rules, 2011.",
-  "requestFramePermissions": ["camera"],
+  "name": "PackScan AI - Legal Metrology Compliance Screening",
+  "description": "Enterprise-grade automated package label compliance screening against Legal Metrology (Packaged Commodities) Rules.",
+  "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

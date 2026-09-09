@@ -67,15 +67,30 @@
       "context_patterns": [
         "customer\\s*care",
         "consumer\\s*care",
+        "customer\\s*service",
+        "consumer\\s*service",
+        "consumer\\s*relations",
+        "consumer\\s*support",
+        "care\\s*executive",
         "complaints?",
+        "grievance",
         "helpline",
         "contact\\s*us",
         "feedback",
         "toll\\s*free"
       ],
       "toll_free_pattern": "\\b1800[- ]?\\d{3,4}[- ]?\\d{3,4}\\b",
-      "phone_pattern": "(?<!\\d)(?:\\+91[- ]?)?[6-9]\\d{9}(?!\\d)",
-      "email_pattern": "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
+      "phone_pattern": "(?<!\\d)(?:\\+91[- ]?)?[6-9]\\d{9}(?!\\d)|(?:\\b0\\d{2,4}[- ]?)?\\d{6,8}\\b",
+      "email_pattern": "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
+      "office_patterns": [
+        "\\b(?:customer|consumer)\\s+care\\s+executive\\b",
+        "\\b(?:nodal|grievance)\\s+officer\\b",
+        "\\bconsumer\\s+care\\s+cell\\b",
+        "\\bcare\\s+executive\\b"
+      ],
+      "entity_patterns": [
+        "\\b[A-Z0-9 &.,'-]+(?:ltd|limited|pvt|private|corporation|industries|products)\\b"
+      ]
     },
     "product_identity": {
       "context_patterns": [

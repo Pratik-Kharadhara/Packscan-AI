@@ -128,13 +128,13 @@ export const HowItWorksPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto space-y-10 pb-16" id="how-it-works-root">
       {/* Top Hero Card */}
-      <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-800">
+      <div className="bg-[#1F2937] text-white rounded-2xl p-8 sm:p-12 shadow-sm border border-slate-700">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-bold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#166534]/40 text-[#BBF7D0] border border-[#166534] text-xs font-bold mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>SIH26034 Technical Architecture</span>
+            <span>Technical Architecture &amp; Methodology</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-black tracking-tight mb-4">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4">
             How PackScan AI Works: From Label Photo to Explainable Audit
           </h1>
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
@@ -150,28 +150,28 @@ export const HowItWorksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Human-in-the-Loop Callout Section (Mandatory from prompt & SIH PDF) */}
+      {/* Human-in-the-Loop Callout Section */}
       <div
         id="human-in-the-loop-callout"
-        className="bg-amber-50/90 border-2 border-amber-300/80 rounded-2xl p-6 sm:p-8 text-amber-950 shadow-sm"
+        className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl p-6 sm:p-8 text-[#78350F] shadow-xs"
       >
         <div className="flex flex-col md:flex-row items-start gap-5">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+          <div className="w-12 h-12 rounded-2xl bg-[#D97706] text-white flex items-center justify-center shrink-0 shadow-xs">
             <UserCheck className="w-6 h-6" />
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
                 Core Design Philosophy
               </span>
-              <h3 className="text-lg sm:text-xl font-extrabold text-amber-950">
+              <h3 className="text-lg sm:text-xl font-bold text-[#78350F]">
                 Human-in-the-Loop: Why PackScan AI Never Uses Blind Pass/Fail
               </h3>
             </div>
-            <p className="text-xs sm:text-sm text-amber-900/90 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#78350F]/90 leading-relaxed">
               In real-world retail shelves, packages encounter curved pouch plastic, specular glare, and faint dot-matrix inkjet stamping for batch dates. A rigid binary pass/fail algorithm either causes false rejections of compliant goods or lets non-compliant labels slip through.
             </p>
-            <p className="text-xs sm:text-sm text-amber-900 font-semibold leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#78350F] font-semibold leading-relaxed">
               PackScan AI returns one of three outcomes: <strong>COMPLIANT</strong>, <strong>NON_COMPLIANT</strong>, or <strong>NEEDS_REVIEW</strong>. 
               Low-confidence reads or ambiguous formats are automatically routed to human inspectors with exact bounding-box coordinates and plain-language guidance — <em>assisting human inspectors rather than attempting to replace their statutory judgement</em>.
             </p>
@@ -183,14 +183,14 @@ export const HowItWorksPage: React.FC = () => {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1F2937] tracking-tight">
               The 6-Step Technical Pipeline
             </h2>
             <p className="text-xs sm:text-sm text-slate-500">
               Interactive breakdown of each layer in the PackScan AI workflow
             </p>
           </div>
-          <span className="text-xs font-mono font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
+          <span className="text-xs font-mono font-bold text-[#166534] bg-[#F0FDF4] px-3 py-1 rounded-lg border border-[#BBF7D0]">
             OpenCV → OCR → Rule Engine
           </span>
         </div>
@@ -205,24 +205,24 @@ export const HowItWorksPage: React.FC = () => {
                 onClick={() => setSelectedPipelineStep(idx)}
                 className={`bg-white rounded-2xl p-5 border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                   isCurrent
-                    ? 'border-blue-600 ring-2 ring-blue-500/20 shadow-md scale-[1.01]'
-                    : 'border-slate-200 hover:border-slate-300 shadow-xs'
+                    ? 'border-[#166534] ring-2 ring-[#166534]/20 shadow-sm'
+                    : 'border-[#D1D5DB] hover:border-slate-400 shadow-2xs'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-xl bg-[#F0FDF4] text-[#166534] flex items-center justify-center font-bold">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F7F8F5] border border-[#D1D5DB] text-slate-600">
                       Step 0{item.step}
                     </span>
                   </div>
 
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 block mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#166534] block mb-1">
                     {item.badge}
                   </span>
-                  <h4 className="text-base font-extrabold text-slate-900 mb-2">
+                  <h4 className="text-base font-bold text-[#1F2937] mb-2">
                     {item.name}
                   </h4>
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">
@@ -232,7 +232,7 @@ export const HowItWorksPage: React.FC = () => {
                   <div className="space-y-1.5 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
                     {item.details.map((d, dIdx) => (
                       <div key={dIdx} className="flex items-start gap-1.5">
-                        <span className="text-blue-500 font-bold">•</span>
+                        <span className="text-[#166534] font-bold">•</span>
                         <span>{d}</span>
                       </div>
                     ))}
@@ -240,7 +240,7 @@ export const HowItWorksPage: React.FC = () => {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100">
-                  <div className="bg-slate-900 text-slate-300 p-2 rounded-lg font-mono text-[10px] truncate">
+                  <div className="bg-[#1F2937] text-slate-300 p-2 rounded-lg font-mono text-[10px] truncate">
                     &gt; {item.sampleOutput}
                   </div>
                 </div>
@@ -251,10 +251,10 @@ export const HowItWorksPage: React.FC = () => {
       </div>
 
       {/* Tech Stack Matrix */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
-        <h3 className="text-lg font-extrabold text-slate-900 mb-2 flex items-center gap-2">
-          <Code2 className="w-5 h-5 text-blue-600" />
-          <span>Technology Stack Badges (Python / CV / OCR Engine)</span>
+      <div className="gov-card p-6 sm:p-8">
+        <h3 className="text-lg font-bold text-[#1F2937] mb-2 flex items-center gap-2">
+          <Code2 className="w-5 h-5 text-[#166534]" />
+          <span>Technology Stack (Computer Vision &amp; Inspection Engine)</span>
         </h3>
         <p className="text-xs text-slate-500 mb-6">
           PackScan AI is built using lightweight, proven open-source computer vision &amp; OCR technologies requiring zero expensive custom model training for the MVP.
@@ -264,11 +264,11 @@ export const HowItWorksPage: React.FC = () => {
           {techStack.map((tech) => (
             <div
               key={tech.name}
-              className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:shadow-xs transition-all"
+              className="p-4 rounded-xl border border-[#D1D5DB] bg-[#F7F8F5] hover:bg-white hover:shadow-xs transition-all"
             >
               <div className="flex items-center justify-between mb-1.5">
-                <h4 className="text-sm font-extrabold text-slate-900">{tech.name}</h4>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                <h4 className="text-sm font-bold text-[#1F2937]">{tech.name}</h4>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
                   {tech.tag}
                 </span>
               </div>
@@ -279,20 +279,20 @@ export const HowItWorksPage: React.FC = () => {
       </div>
 
       {/* Future-Ready Rule Engine Decoupling Callout */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 border border-slate-800">
+      <div className="bg-[#1F2937] text-white rounded-2xl p-6 sm:p-8 border border-slate-700">
         <div className="flex flex-col md:flex-row items-start gap-5">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-[#166534] flex items-center justify-center shrink-0">
             <Terminal className="w-6 h-6 text-white" />
           </div>
           <div>
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">
-              Architecture Highlight • Appendix Slide 6 &amp; 7
+            <div className="text-xs font-bold text-[#86EFAC] uppercase tracking-wider mb-1">
+              Architecture Highlight
             </div>
-            <h3 className="text-lg font-extrabold text-white mb-2">
+            <h3 className="text-lg font-bold text-white mb-2">
               Future-Ready Design: Independent OCR &amp; Rule Engine
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
-              Because the compliance rule engine is kept strictly decoupled from the OCR pipeline in a configurable Python schema, 
+              Because the compliance rule engine is kept strictly decoupled from the OCR pipeline in a configurable schema, 
               statutory amendments to the Legal Metrology (Packaged Commodities) Rules, new commodity categories (such as e-commerce aggregators or QR code mandates), 
               and state-specific amendments plug in immediately without touching the extraction layer or retraining any computer vision models.
             </p>

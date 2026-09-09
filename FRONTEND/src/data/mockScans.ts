@@ -135,14 +135,14 @@ export function generatePackageLabelSvg(config: {
 
     <!-- Bottom Verification Watermark -->
     <rect x="35" y="750" width="530" height="24" rx="6" fill="#0f172a" opacity="0.85"/>
-    <text x="300" y="766" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600" letter-spacing="1">PACKSCAN AI • DIGITAL COMPLIANCE SCREENING • SIH26034 VISION FORGE</text>
+    <text x="300" y="766" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600" letter-spacing="1">PACKSCAN AI • DIGITAL COMPLIANCE SCREENING • LEGAL METROLOGY PCR 2011</text>
   </svg>
   `;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
-// Preset 1: NEEDS_REVIEW (The exact showcase sample requested in the prompt & SIH PDF)
+// Preset 1: NEEDS_REVIEW (The showcase sample for packaged commodities)
 // Net quantity detected: 500g ✅
 // Manufacturer details detected ✅
 // Manufacturing date — low OCR confidence ⚠️

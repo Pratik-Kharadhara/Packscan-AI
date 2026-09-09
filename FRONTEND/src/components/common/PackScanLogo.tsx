@@ -1,157 +1,180 @@
 import React from 'react';
 
 interface PackScanLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  showWordmark?: boolean;
-  layout?: 'horizontal' | 'vertical';
-  inverted?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  showText?: boolean;
   className?: string;
+  variant?: 'full' | 'icon-only' | 'stacked';
+  lightText?: boolean;
 }
 
 export const PackScanLogo: React.FC<PackScanLogoProps> = ({
   size = 'md',
-  showWordmark = true,
-  layout = 'horizontal',
-  inverted = false,
+  showText = true,
   className = '',
+  variant = 'full',
+  lightText = false,
 }) => {
   const iconDimensions = {
-    sm: 'w-7 h-7',
-    md: 'w-9 h-9',
-    lg: 'w-12 h-12',
-    xl: 'w-20 h-20',
+    sm: { width: 30, height: 30 },
+    md: { width: 40, height: 40 },
+    lg: { width: 54, height: 54 },
+    xl: { width: 72, height: 72 },
+    '2xl': { width: 110, height: 110 },
   };
 
   const textSizes = {
-    sm: 'text-sm font-black',
-    md: 'text-lg font-black',
-    lg: 'text-2xl font-black',
-    xl: 'text-3xl font-black',
+    sm: 'text-sm tracking-tight',
+    md: 'text-[17px] tracking-tight',
+    lg: 'text-2xl tracking-tight',
+    xl: 'text-3xl tracking-tight',
+    '2xl': 'text-5xl tracking-tight',
   };
 
-  return (
-    <div
-      className={`inline-flex items-center ${
-        layout === 'vertical' ? 'flex-col text-center gap-2' : 'flex-row gap-2.5'
-      } ${className}`}
+  const { width, height } = iconDimensions[size];
+
+  // SVG representation matching the user's provided logo wo bg.png
+  const renderPouchIcon = () => (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 200 210"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0 drop-shadow-xs"
     >
-      {/* High-fidelity Vector Pouch + Magnifier SVG Emblem */}
-      <div className={`${iconDimensions[size]} shrink-0 relative flex items-center justify-center`}>
-        <svg
-          viewBox="0 0 100 100"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full drop-shadow-xs"
-        >
-          {/* Pouch drop shadow/underlayer */}
-          <path
-            d="M26 18 L30 14 L34 18 L38 14 L42 18 L46 14 L50 18 L54 14 L58 18 L62 14 L66 18 L70 14 L74 18 L72 82 L68 86 L64 82 L60 86 L56 82 L52 86 L48 82 L44 86 L40 82 L36 86 L32 82 L28 86 L26 82 Z"
-            fill="#E5E7EB"
-          />
+      {/* 
+        Serrated Crinkle Pouch Bag 
+      */}
+      <defs>
+        <clipPath id="pouchClip">
+          {/* Exact Pouch Outer Silhouette */}
+          <path d="M 40 38 
+                   L 46 26 L 54 38 L 62 26 L 70 38 L 78 26 L 86 38 L 94 26 L 102 38 L 110 26 L 118 38 L 126 26 L 134 38 L 140 26 L 146 38
+                   Q 138 100, 146 162
+                   L 140 174 L 134 162 L 126 174 L 118 162 L 110 174 L 102 162 L 94 174 L 86 162 L 78 174 L 70 162 L 62 174 L 54 162 L 46 174 L 40 162
+                   Q 48 100, 40 38 Z" />
+        </clipPath>
+      </defs>
 
-          {/* Main White Pouch Body */}
-          <path
-            d="M26 20 L30 16 L34 20 L38 16 L42 20 L46 16 L50 20 L54 16 L58 20 L62 16 L66 20 L70 16 L74 20 L72 80 L68 84 L64 80 L60 84 L56 80 L52 84 L48 80 L44 84 L40 80 L36 84 L32 80 L28 84 L26 80 Z"
-            fill={inverted ? '#FFFFFF' : '#FFFFFF'}
-            stroke="#1F2937"
-            strokeWidth="3.2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
+      {/* Outer Pouch Shadow & Contour */}
+      <path
+        d="M 40 38 
+           L 46 26 L 54 38 L 62 26 L 70 38 L 78 26 L 86 38 L 94 26 L 102 38 L 110 26 L 118 38 L 126 26 L 134 38 L 140 26 L 146 38
+           Q 138 100, 146 162
+           L 140 174 L 134 162 L 126 174 L 118 162 L 110 174 L 102 162 L 94 174 L 86 162 L 78 174 L 70 162 L 62 174 L 54 162 L 46 174 L 40 162
+           Q 48 100, 40 38 Z"
+        fill="#0F2417"
+        stroke="#0F2417"
+        strokeWidth="6"
+        strokeLinejoin="round"
+      />
 
-          {/* Green Branding Diagonal Fold/Band on Right Side */}
-          <path
-            d="M52 20 L74 20 L72 80 L48 80 C48 65, 62 48, 52 20 Z"
-            fill="#166534"
-            stroke="#1F2937"
-            strokeWidth="2.5"
-            strokeLinejoin="round"
-          />
+      {/* Inside Pouch Body with Vertical Two-Tone Split */}
+      <g clipPath="url(#pouchClip)">
+        {/* Left Side: Soft Off-White / Cream */}
+        <rect x="30" y="20" width="130" height="160" fill="#F4F2E8" />
 
-          {/* Statutory Vegetarian Green Mark (Green square with inner circle) */}
-          <rect
-            x="32"
-            y="66"
-            width="8"
-            height="8"
-            rx="1"
-            fill="white"
-            stroke="#15803D"
-            strokeWidth="1.2"
-          />
-          <circle cx="36" cy="70" r="2.2" fill="#15803D" />
+        {/* Right Side: Rich Forest Green */}
+        <path d="M 98 20 L 160 20 L 160 180 L 84 180 Q 94 100, 98 20 Z" fill="#1B6336" />
 
-          {/* Package details lines */}
-          <line x1="32" y1="36" x2="42" y2="36" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="32" y1="42" x2="42" y2="42" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="32" y1="48" x2="39" y2="48" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="32" y1="54" x2="41" y2="54" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" />
+        {/* Top & Bottom Crimp Shading Folds */}
+        <line x1="40" y1="46" x2="146" y2="46" stroke="#0F2417" strokeWidth="2.5" opacity="0.3" />
+        <line x1="40" y1="154" x2="146" y2="154" stroke="#0F2417" strokeWidth="2.5" opacity="0.3" />
 
-          {/* Magnifying Glass Lens Outer Rim */}
-          <circle
-            cx="58"
-            cy="48"
-            r="19"
-            fill="#FFFFFF"
-            stroke="#1F2937"
-            strokeWidth="4"
-          />
+        {/* Pouch Left: Horizontal Label Text Lines */}
+        <rect x="52" y="74" width="22" height="4" rx="2" fill="#0F2417" />
+        <rect x="52" y="83" width="22" height="4" rx="2" fill="#0F2417" />
+        <rect x="52" y="92" width="22" height="4" rx="2" fill="#0F2417" />
+        <rect x="52" y="101" width="18" height="4" rx="2" fill="#0F2417" />
 
-          {/* Lens Glass Subtle Shading */}
-          <circle
-            cx="58"
-            cy="48"
-            r="16"
-            fill="#F7F8F5"
-            opacity="0.9"
-          />
+        {/* Veg Symbol on Bottom Left */}
+        <g transform="translate(52, 122)">
+          <rect width="18" height="18" rx="2" fill="#F4F2E8" stroke="#166534" strokeWidth="2" />
+          <circle cx="9" cy="9" r="4.5" fill="#166534" />
+        </g>
+      </g>
 
-          {/* Text Lines inside Magnifier */}
-          <line x1="46" y1="42" x2="56" y2="42" stroke="#1F2937" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="46" y1="48" x2="54" y2="48" stroke="#1F2937" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="46" y1="54" x2="55" y2="54" stroke="#1F2937" strokeWidth="2.2" strokeLinecap="round" />
+      {/* Magnifying Glass Handle (extending down-right) */}
+      <line
+        x1="128"
+        y1="118"
+        x2="164"
+        y2="154"
+        stroke="#0F2417"
+        strokeWidth="13"
+        strokeLinecap="round"
+      />
+      {/* Inner highlight on handle */}
+      <line
+        x1="130"
+        y1="120"
+        x2="158"
+        y2="148"
+        stroke="#274834"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
 
-          {/* Compliance Checkmark Badge in Lens */}
-          <circle cx="66" cy="48" r="7.5" fill="#15803D" />
-          <path
-            d="M62.5 48 L65 50.5 L69.5 45.5"
-            stroke="#FFFFFF"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+      {/* Magnifying Glass Outer Rim */}
+      <circle cx="108" cy="98" r="38" fill="#F1F8F4" stroke="#0F2417" strokeWidth="9" />
 
-          {/* Magnifying Glass Handle */}
-          <path
-            d="M72 61.5 L84 76"
-            stroke="#1F2937"
-            strokeWidth="5.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M73 63 L83 75"
-            stroke="#166534"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
+      {/* Inside Magnifying Glass: Magnified Label Text Lines */}
+      <rect x="84" y="86" width="22" height="4.5" rx="2.25" fill="#0F2417" />
+      <rect x="84" y="96" width="22" height="4.5" rx="2.25" fill="#0F2417" />
+      <rect x="84" y="106" width="18" height="4.5" rx="2.25" fill="#0F2417" />
 
-      {/* Official PackScan.Ai Wordmark */}
-      {showWordmark && (
-        <div className="leading-none select-none">
-          <div className={`${textSizes[size]} tracking-tight flex items-baseline`}>
-            <span className={inverted ? 'text-white' : 'text-[#1F2937]'}>PackScan</span>
-            <span className="text-[#166534]">.Ai</span>
-          </div>
-          {size !== 'sm' && (
-            <p
-              className={`text-[9px] font-semibold uppercase tracking-wider mt-0.5 ${
-                inverted ? 'text-stone-400' : 'text-stone-500'
+      {/* Magnified Inspection Checkmark Badge */}
+      <circle cx="124" cy="98" r="14" fill="#1B8746" stroke="#0F2417" strokeWidth="2.5" />
+      <path
+        d="M 118 98 L 122 102 L 130 94"
+        stroke="#FFFFFF"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+
+  if (variant === 'icon-only') {
+    return <div className={`inline-flex items-center select-none ${className}`}>{renderPouchIcon()}</div>;
+  }
+
+  if (variant === 'stacked') {
+    return (
+      <div className={`flex flex-col items-center select-none ${className}`}>
+        {renderPouchIcon()}
+        {showText && (
+          <div className="mt-2 text-center">
+            <span
+              className={`font-black ${textSizes[size]} ${
+                lightText ? 'text-white' : 'text-[#1F2937]'
               }`}
             >
+              PackScan<span className={lightText ? 'text-[#86EFAC]' : 'text-[#166534]'}>.Ai</span>
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`inline-flex items-center gap-2 select-none ${className}`}>
+      {renderPouchIcon()}
+      {showText && (
+        <div className="flex flex-col leading-none">
+          <span
+            className={`font-black ${textSizes[size]} ${
+              lightText ? 'text-white' : 'text-[#1F2937]'
+            }`}
+          >
+            PackScan<span className={lightText ? 'text-[#86EFAC]' : 'text-[#166534]'}>.Ai</span>
+          </span>
+          {size !== 'sm' && (
+            <span className={`text-[9px] font-semibold tracking-wider uppercase mt-0.5 ${lightText ? 'text-slate-300' : 'text-slate-500'}`}>
               Legal Metrology Compliance
-            </p>
+            </span>
           )}
         </div>
       )}

@@ -74,51 +74,6 @@ async function resolveImageDataUrl(file?: File, existingUrl?: string): Promise<s
   });
 }
 
-async function dataUrlToFile(dataUrl: string, filename: string): Promise<File> {
-  const res = await fetch(dataUrl);
-  const blob = await res.blob();
-  return new File([blob], filename, { type: blob.type || 'image/jpeg' });
-}
-
-export interface SamplePackagingSpecimen {
-  id: string;
-  filename: string;
-  title: string;
-  url: string;
-  category: string;
-  productName: string;
-}
-
-/**
- * Fetches available sample images from the backend benchmark dataset.
- */
-export async function fetchSampleImages(): Promise<SamplePackagingSpecimen[]> {
-  try {
-    const res = await fetch('/api/samples');
-    if (res.ok) {
-      return (await res.json()) as SamplePackagingSpecimen[];
-    }
-  } catch (e) {
-    console.debug('Backend samples endpoint unavailable', e);
-  }
-  return [];
-}
-
-/**
- * Fetches persistent scan history from SQLite database via backend REST API.
- */
-export async function fetchBackendHistory(): Promise<ScanResult[] | null> {
-  try {
-    const res = await fetch('/api/history?limit=50');
-    if (res.ok) {
-      return (await res.json()) as ScanResult[];
-    }
-  } catch (e) {
-    console.debug('Backend history endpoint unavailable', e);
-  }
-  return null;
-}
-
 /**
  * Simulates or connects to the PackScan AI backend pipeline.
  * Supports single image, multi-angle package panels, or preset samples.
@@ -135,150 +90,174 @@ export async function analyzePackage(params: AnalyzePackageParams): Promise<Scan
     onProgress,
   } = params;
 
-  // 1. If a preset was picked, return corresponding sample with updated timestamp
-  if (presetId === 'compliant') {
-    onProgress?.('capture', 20, 'Loading compliant demonstration baseline...');
-    await new Promise((r) => setTimeout(r, 250));
-    onProgress?.('rule_engine', 80, 'Validating Rule 6, 7 & 8 declarations...');
-    await new Promise((r) => setTimeout(r, 200));
-    onProgress?.('result', 100, 'Compliance verification report ready.');
-    return {
-      ...SAMPLE_COMPLIANT,
-      id: `SCAN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      timestamp: new Date().toLocaleString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }) + ' IST',
-    };
-  }
+  // Helper to convert base64 data URL to Blob for upload
+  const dataUrlToBlob = (dataUrl: string): Blob => {
+    const parts = dataUrl.split(',');
+    const mimeMatch = parts[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const bstr = atob(parts[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  };
 
-  if (presetId === 'non_compliant') {
-    onProgress?.('capture', 20, 'Loading non-compliant specimen...');
-    await new Promise((r) => setTimeout(r, 250));
-    onProgress?.('rule_engine', 80, 'Identifying statutory omissions under Rule 6...');
-    await new Promise((r) => setTimeout(r, 200));
-    onProgress?.('result', 100, 'Compliance verification report ready.');
-    return {
-      ...SAMPLE_NON_COMPLIANT,
-      id: `SCAN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      timestamp: new Date().toLocaleString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }) + ' IST',
-    };
-  }
+  // If a preset was picked, simulate the pipeline stages and return corresponding sample
+  if (presetId) {
+    for (let i = 0; i < PIPELINE_STAGES.length; i++) {
+      const stage = PIPELINE_STAGES[i];
+      const stageProgress = Math.round(((i + 1) / PIPELINE_STAGES.length) * 100);
+      if (onProgress) {
+        onProgress(stage.id, stageProgress, stage.message);
+      }
+      await new Promise((resolve) => setTimeout(resolve, stage.waitMs));
+    }
 
-  if (presetId === 'needs_review') {
-    onProgress?.('capture', 20, 'Loading inspection review specimen...');
-    await new Promise((r) => setTimeout(r, 250));
-    onProgress?.('rule_engine', 80, 'Flagging low OCR confidence declarations...');
-    await new Promise((r) => setTimeout(r, 200));
-    onProgress?.('result', 100, 'Compliance verification report ready.');
+    const scanTimestamp = new Date().toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }) + ' IST';
+
+    if (presetId === 'compliant') {
+      return {
+        ...SAMPLE_COMPLIANT,
+        id: `SCAN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        timestamp: scanTimestamp,
+      };
+    }
+    if (presetId === 'non_compliant') {
+      return {
+        ...SAMPLE_NON_COMPLIANT,
+        id: `SCAN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        timestamp: scanTimestamp,
+      };
+    }
     return {
       ...SAMPLE_NEEDS_REVIEW,
       id: `SCAN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      timestamp: new Date().toLocaleString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }) + ' IST',
+      timestamp: scanTimestamp,
     };
   }
 
-  // 2. Collect files to send to the real backend OCR pipeline
-  const filesToUpload: File[] = [];
-  if (imageFile) {
-    filesToUpload.push(imageFile);
-  }
-  for (const it of images) {
-    if (it.file) {
-      filesToUpload.push(it.file);
-    } else if (it.url && it.url.startsWith('data:')) {
+  // --- REAL BACKEND OCR & LEGAL METROLOGY PIPELINE EXECUTION ---
+  const hasRealUpload = Boolean(imageFile || (images && images.length > 0) || (imageUrl && imageUrl.startsWith('data:')));
+
+  if (hasRealUpload) {
+    const formData = new FormData();
+    formData.append('category', category);
+    if (productName) formData.append('product_name', productName);
+    formData.append('scan_mode', scanMode);
+
+    let hasFiles = false;
+    if (images && images.length > 0) {
+      for (let idx = 0; idx < images.length; idx++) {
+        const item = images[idx];
+        if (item.file) {
+          formData.append('files', item.file, item.file.name);
+          hasFiles = true;
+        } else if (item.url && item.url.startsWith('data:')) {
+          const blob = dataUrlToBlob(item.url);
+          formData.append('files', blob, item.name || `panel_${idx + 1}.jpg`);
+          hasFiles = true;
+        }
+      }
+    } else if (imageFile) {
+      formData.append('files', imageFile, imageFile.name);
+      hasFiles = true;
+    } else if (imageUrl && imageUrl.startsWith('data:')) {
+      const blob = dataUrlToBlob(imageUrl);
+      formData.append('files', blob, 'package_photo.jpg');
+      hasFiles = true;
+    }
+
+    if (hasFiles) {
+      // Advance stages dynamically while backend request is processing
+      let isDone = false;
+      const progressTracker = (async () => {
+        const stageConfigs: { id: PipelineStageId; pct: number; delay: number; msg: string }[] = [
+          {
+            id: 'capture',
+            pct: 18,
+            delay: 450,
+            msg: images.length > 1
+              ? `Assessing sharpness & illumination across all ${images.length} package panel photos...`
+              : 'Validating optical sharpness, frame boundaries & specular glare...',
+          },
+          {
+            id: 'preprocess',
+            pct: 36,
+            delay: 600,
+            msg: 'Applying deskew homography, noise reduction & Otsu thresholding...',
+          },
+          {
+            id: 'ocr',
+            pct: 62,
+            delay: 900,
+            msg: images.length > 1
+              ? `Extracting 2D spatial text polygons across ${images.length} panels with EasyOCR...`
+              : 'Extracting 2D spatial text tokens & softmax confidence via EasyOCR engine...',
+          },
+          {
+            id: 'field_id',
+            pct: 82,
+            delay: 700,
+            msg: 'Matching extracted strings against Legal Metrology statutory regex rules...',
+          },
+          {
+            id: 'rule_engine',
+            pct: 94,
+            delay: 700,
+            msg: 'Auditing declarations against Rules 6, 7 & 8 of Packaged Commodities Rules, 2011...',
+          },
+        ];
+
+        for (const stg of stageConfigs) {
+          if (isDone) break;
+          if (onProgress) onProgress(stg.id, stg.pct, stg.msg);
+          await new Promise((r) => setTimeout(r, stg.delay));
+        }
+      })();
+
       try {
-        const converted = await dataUrlToFile(it.url, it.name || 'panel.jpg');
-        filesToUpload.push(converted);
-      } catch {
-        // ignore conversion error
+        const response = await fetch('/api/scan', {
+          method: 'POST',
+          body: formData,
+        });
+
+        isDone = true;
+        await progressTracker;
+
+        if (response.ok) {
+          const realBackendResult: ScanResult = await response.json();
+          if (onProgress) {
+            onProgress('result', 100, 'Compliance audit synthesis complete. Rendering 2D bounding overlays...');
+          }
+          await new Promise((r) => setTimeout(r, 250));
+          return realBackendResult;
+        } else {
+          const errText = await response.text();
+          console.warn('Backend API returned non-200, falling back to synthesizer:', response.status, errText);
+        }
+      } catch (backendError) {
+        isDone = true;
+        await progressTracker;
+        console.warn('Failed to contact backend API, utilizing client fallback:', backendError);
       }
     }
   }
 
-  // 3. Connect to real FastAPI backend /api/scan if images are available
-  if (filesToUpload.length > 0) {
-    try {
-      onProgress?.('capture', 15, 'Evaluating camera framing & image sharpness...');
-      const formData = new FormData();
-      for (const f of filesToUpload) {
-        formData.append('files', f);
-      }
-      formData.append('category', category);
-      if (productName) formData.append('product_name', productName);
-      formData.append('scan_mode', scanMode);
-
-      // Advance progress indicators smoothly during backend EasyOCR execution
-      let stageIdx = 1;
-      const progressTimer = setInterval(() => {
-        if (stageIdx < PIPELINE_STAGES.length - 1) {
-          const st = PIPELINE_STAGES[stageIdx];
-          const pct = Math.round(((stageIdx + 1) / PIPELINE_STAGES.length) * 90);
-          onProgress?.(st.id, pct, st.message);
-          stageIdx++;
-        }
-      }, 800);
-
-      const resp = await fetch('/api/scan', {
-        method: 'POST',
-        body: formData,
-      });
-
-      clearInterval(progressTimer);
-
-      if (resp.ok) {
-        const backendResult = (await resp.json()) as ScanResult;
-        if (backendResult && backendResult.id) {
-          onProgress?.('result', 100, 'Legal Metrology compliance screening synthesized successfully.');
-          return backendResult;
-        }
-      } else {
-        console.warn(`Backend /api/scan responded with status ${resp.status}; using client fallback`);
-      }
-    } catch (backendErr) {
-      console.warn('Backend /api/scan connection unavailable; using client fallback:', backendErr);
-    }
-  }
-
-  // 4. Fallback client-side simulated pipeline execution
+  // Fallback client simulation if backend is unreachable or offline
   for (let i = 0; i < PIPELINE_STAGES.length; i++) {
     const stage = PIPELINE_STAGES[i];
     const stageProgress = Math.round(((i + 1) / PIPELINE_STAGES.length) * 100);
-
-    let customMsg = stage.message;
-    if (images.length > 1 && scanMode === 'multi_angle') {
-      if (stage.id === 'capture') {
-        customMsg = `Assessing quality & specular glare across all ${images.length} package panel photos...`;
-      } else if (stage.id === 'ocr') {
-        customMsg = `Extracting spatial text across ${images.length} angles (Front, Back & Side surfaces)...`;
-      } else if (stage.id === 'rule_engine') {
-        customMsg = `Consolidating declarations from all ${images.length} panels against Rules 6, 7 & 8...`;
-      }
-    }
-
-    if (onProgress) {
-      onProgress(stage.id, stageProgress, customMsg);
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, stage.waitMs));
+    if (onProgress) onProgress(stage.id, stageProgress, stage.message);
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
 
   // Process uploaded images

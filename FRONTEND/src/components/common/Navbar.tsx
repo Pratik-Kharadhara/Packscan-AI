@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 import {
   Scan,
-  History,
-  Info,
-  FileCheck2,
   Menu,
   X,
-  ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
-import { motion, useScroll, useSpring } from 'motion/react';
 import { PackScanLogo } from './PackScanLogo';
-import { GlowButton } from './GlowButton';
 
-export type NavPage = 'home' | 'scan' | 'results' | 'history' | 'about';
+export type NavPage = 'home' | 'scan' | 'results' | 'history' | 'howItWorks' | 'about';
 
 interface NavbarProps {
   activePage: NavPage;
@@ -28,20 +22,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Scroll Progress Animation Indicator
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 25,
-    restDelta: 0.001,
-  });
-
   const navItems = [
-    { id: 'home', label: 'Overview', icon: ShieldCheck },
-    { id: 'scan', label: 'Verify Package', icon: Scan },
-    ...(hasActiveResult ? [{ id: 'results', label: 'Audit Findings', icon: FileCheck2 }] : []),
-    { id: 'history', label: 'Inspection Logs', icon: History },
-    { id: 'about', label: 'Regulatory Framework', icon: Info },
+    { id: 'home', label: 'Overview' },
+    { id: 'scan', label: 'Scan Package' },
+    ...(hasActiveResult ? [{ id: 'results', label: 'Inspection Results' }] : []),
+    { id: 'history', label: 'Audit History' },
+    { id: 'howItWorks', label: 'Pipeline' },
+    { id: 'about', label: 'Legal Basis' },
   ];
 
   const handleNavClick = (page: NavPage) => {
@@ -50,99 +37,97 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#D1D5DB] shadow-2xs">
-      {/* Scroll Progress Bar */}
-      <motion.div
-        className="h-1 bg-[#166534] origin-left fixed top-0 left-0 right-0 z-50 pointer-none pointer-events-none"
-        style={{ scaleX }}
-      />
-
-      {/* Main Nav Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Official PackScan.Ai Logo */}
+    <header className="sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#D1D5DB] transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[60px] flex items-center justify-between">
+        {/* Brand Logo */}
         <div
           onClick={() => handleNavClick('home')}
-          className="cursor-pointer group flex items-center shrink-0"
+          className="flex items-center cursor-pointer group gap-2.5"
           id="brand-logo"
         >
-          <PackScanLogo size="md" showWordmark={true} />
+          <PackScanLogo size="md" />
+          <span className="hidden md:inline-block text-[10px] font-bold tracking-normal px-2 py-0.5 rounded-full bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+            PCR 2011
+          </span>
         </div>
 
-        {/* Desktop Nav Items */}
-        <nav className="hidden lg:flex items-center space-x-1 bg-stone-100/80 p-1 rounded-full border border-[#D1D5DB]">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main Navigation">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = activePage === item.id;
             return (
               <button
                 key={item.id}
+                id={`nav-link-${item.id}`}
                 onClick={() => handleNavClick(item.id as NavPage)}
-                className={`relative px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-white text-[#166534] shadow-xs font-bold border border-[#BBF7D0]'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
+                    ? 'bg-[#F0FDF4] text-[#166534] font-semibold border border-[#BBF7D0]'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-[#F7F8F5]'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#166534]' : 'text-stone-400'}`} />
                 <span>{item.label}</span>
               </button>
             );
           })}
         </nav>
 
-        {/* Right CTA Button (Framework Pill Style with Cursor-Aware Glow) */}
-        <div className="hidden sm:flex items-center gap-3 shrink-0">
-          <GlowButton
+        {/* Right Nav Action */}
+        <div className="hidden sm:flex items-center gap-2.5">
+          <button
+            onClick={() => handleNavClick('about')}
+            className="text-xs font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-[#F7F8F5] transition-colors"
+          >
+            Statutory Scope
+          </button>
+          <button
             id="nav-scan-cta"
             onClick={() => handleNavClick('scan')}
-            icon={<Scan className="w-3.5 h-3.5" />}
-            size="sm"
-            variant="primary"
-            showArrow={true}
-            glowColor="rgba(34, 197, 94, 0.4)"
+            className="btn-nav-cta text-xs"
           >
-            Verify Package
-          </GlowButton>
+            <Scan className="w-3.5 h-3.5" />
+            <span>Scan Package</span>
+            <ArrowRight className="w-3 h-3 text-[#BBF7D0]" />
+          </button>
         </div>
 
         {/* Mobile menu button */}
         <div className="lg:hidden flex items-center gap-2">
           <button
             onClick={() => handleNavClick('scan')}
-            className="p-2 bg-[#166534] text-white rounded-xl text-xs font-bold flex items-center gap-1"
+            className="btn-nav-cta text-xs py-1.5 px-3 h-[36px]"
           >
             <Scan className="w-3.5 h-3.5" />
-            <span className="sm:hidden">Verify</span>
+            <span>Scan</span>
           </button>
           <button
             id="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+            className="p-2 rounded-lg text-slate-700 hover:bg-[#F7F8F5] border border-[#D1D5DB]"
             aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
       {/* Mobile dropdown menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-[#D1D5DB] bg-white px-4 pt-2 pb-4 space-y-1 shadow-md">
+        <div className="lg:hidden border-t border-[#D1D5DB] bg-[#FFFFFF] px-4 pt-3 pb-5 space-y-1 shadow-sm">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = activePage === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id as NavPage)}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left transition-colors ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-left transition-colors ${
                   isActive
-                    ? 'bg-[#F0FDF4] text-[#166534] font-bold border border-[#BBF7D0]'
-                    : 'text-stone-700 hover:bg-stone-100'
+                    ? 'bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]'
+                    : 'text-slate-600 hover:bg-[#F7F8F5]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#166534]' : 'text-stone-400'}`} />
                 <span>{item.label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#166534]" />}
               </button>
             );
           })}

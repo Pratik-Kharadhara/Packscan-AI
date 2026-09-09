@@ -19,62 +19,59 @@ export const PipelineStepFlow: React.FC<PipelineStepFlowProps> = ({
       name: 'IMAGE',
       sub: 'Capture & Preprocess',
       icon: Camera,
-      color: 'blue',
-      detail: 'Smartphone or flatbed package capture with OpenCV blur & glare detection',
+      detail: 'Label capture with blur, glare, and rotation validation',
     },
     {
       name: 'EXTRACT',
       sub: 'OCR & Bounding Boxes',
       icon: Search,
-      color: 'indigo',
-      detail: 'EasyOCR & Tesseract text recognition with spatial coordinates',
+      detail: 'Multi-lingual OCR text extraction with spatial coordinates',
     },
     {
       name: 'VERIFY',
       sub: 'Rule Engine 2011',
       icon: CheckSquare,
-      color: 'teal',
-      detail: 'Legal Metrology Rules 6, 7 & 8 pattern validation across 6 fields',
+      detail: 'Legal Metrology Rules 6, 7 & 8 validation across 6 declarations',
     },
     {
       name: 'EXPLAIN',
-      sub: 'Human-in-the-Loop',
+      sub: 'Transparent Reasoning',
       icon: MessageSquare,
-      color: 'amber',
-      detail: 'Plain-language rationale for flags: Compliant, Needs Review, or Non-Compliant',
+      detail: 'Confidence scoring & explainable evidence for human inspectors',
     },
     {
       name: 'REPORT',
-      sub: 'Audit PDF & History',
+      sub: 'Statutory PDF Export',
       icon: FileText,
-      color: 'slate',
-      detail: 'Exportable statutory inspection certificate with inspector sign-off',
+      detail: 'Formal compliance report with timestamp and bounding annotations',
     },
   ];
 
   if (variant === 'compact') {
     return (
-      <div
-        id="pipeline-flow-compact"
-        className={`flex items-center justify-between gap-1 sm:gap-2 px-3 py-2 bg-slate-900 text-white rounded-xl border border-slate-800 text-xs ${className}`}
-      >
+      <div className={`flex items-center justify-between gap-1 overflow-x-auto py-2 ${className}`}>
         {steps.map((step, idx) => {
           const Icon = step.icon;
           const isActive = currentActiveStep === idx + 1;
+          const isPassed = currentActiveStep !== undefined && currentActiveStep > idx + 1;
+
           return (
             <React.Fragment key={step.name}>
               <div
-                className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
+                onClick={() => onStepClick && onStepClick(idx)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 cursor-pointer transition-all ${
                   isActive
-                    ? 'bg-blue-600 text-white font-bold'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-[#166534] text-white shadow-2xs font-bold'
+                    : isPassed
+                    ? 'bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]'
+                    : 'bg-white text-slate-600 border border-[#D1D5DB]'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
-                <span className="font-semibold tracking-wider text-[11px]">{step.name}</span>
+                <span>{step.name}</span>
               </div>
               {idx < steps.length - 1 && (
-                <ArrowRight className="w-3 h-3 text-slate-500 shrink-0" />
+                <ArrowRight className="w-3 h-3 text-[#D1D5DB] shrink-0" />
               )}
             </React.Fragment>
           );
@@ -84,68 +81,60 @@ export const PipelineStepFlow: React.FC<PipelineStepFlowProps> = ({
   }
 
   return (
-    <div
-      id="pipeline-flow-full"
-      className={`w-full bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 sm:p-6 ${className}`}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-extrabold">
-            ✦
-          </span>
-          <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 uppercase tracking-wider">
-            PackScan AI Digital Verification Pipeline
-          </h3>
-        </div>
-        <span className="text-[11px] font-medium text-slate-500 hidden sm:inline-block">
-          Rules 6, 7 &amp; 8 • Legal Metrology (Packaged Commodities) Rules, 2011
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 relative">
+    <div className={`w-full ${className}`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         {steps.map((step, idx) => {
           const Icon = step.icon;
           const isActive = currentActiveStep === idx + 1;
-          const isPassed = currentActiveStep ? idx + 1 < currentActiveStep : false;
+          const isPassed = currentActiveStep !== undefined && currentActiveStep > idx + 1;
 
           return (
             <div
               key={step.name}
               onClick={() => onStepClick && onStepClick(idx)}
-              className={`relative rounded-xl p-3.5 transition-all duration-200 cursor-pointer ${
+              className={`p-4 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between ${
                 isActive
-                  ? 'bg-blue-50 border-2 border-blue-600 shadow-sm ring-2 ring-blue-100'
+                  ? 'bg-white border-[#166534] shadow-sm ring-1 ring-[#166534]'
                   : isPassed
-                  ? 'bg-emerald-50/70 border border-emerald-300'
-                  : 'bg-slate-50 hover:bg-slate-100/80 border border-slate-200'
+                  ? 'bg-[#F0FDF4]/60 border-[#BBF7D0]'
+                  : 'bg-white border-[#D1D5DB] hover:border-slate-400'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    isActive
-                      ? 'bg-blue-600 text-white'
-                      : isPassed
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-white text-slate-700 border border-slate-200'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
+                      isActive
+                        ? 'bg-[#166534] text-white'
+                        : isPassed
+                        ? 'bg-[#15803D] text-white'
+                        : 'bg-[#F7F8F5] text-slate-600 border border-[#D1D5DB]'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-slate-600">
+                    STAGE 0{idx + 1}
+                  </span>
                 </div>
-                <span className="text-[10px] font-mono font-bold text-slate-400">
-                  0{idx + 1}
-                </span>
+                <h4 className="text-xs font-bold text-[#1F2937] tracking-tight">
+                  {step.name}
+                </h4>
+                <p className="text-[11px] font-medium text-[#166534] mt-0.5">
+                  {step.sub}
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1 leading-snug line-clamp-2">
+                  {step.detail}
+                </p>
               </div>
 
-              <div className="text-xs font-black tracking-wider text-slate-900">
-                {step.name}
-              </div>
-              <div className="text-[11px] font-semibold text-slate-600 mt-0.5">
-                {step.sub}
-              </div>
-              <div className="text-[10px] text-slate-500 leading-tight mt-1 line-clamp-2">
-                {step.detail}
-              </div>
+              {idx < steps.length - 1 && (
+                <div className="hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 z-10">
+                  <span className="w-4 h-4 rounded-full bg-white border border-[#D1D5DB] flex items-center justify-center shadow-2xs text-[10px] text-slate-400">
+                    &rarr;
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}

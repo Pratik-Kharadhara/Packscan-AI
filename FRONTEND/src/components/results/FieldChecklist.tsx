@@ -1,190 +1,362 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FieldKey, VerifiedField } from '../../types';
 import { FieldStatusPill } from '../common/Badge';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
+  ChevronDown,
   Check,
-  HelpCircle,
+  Scale,
+  Eye,
 } from 'lucide-react';
 
 interface FieldChecklistProps {
   fields: Record<FieldKey, VerifiedField>;
   activeFieldKey?: FieldKey | null;
   onSelectField?: (key: FieldKey) => void;
+  onOpenImageInspector?: (key?: FieldKey) => void;
 }
+
+const ORDERED_FIELD_KEYS: FieldKey[] = [
+  'manufacturer',
+  'commodity',
+  'netQuantity',
+  'mfgDate',
+  'mrp',
+  'consumerComplaint',
+];
 
 export const FieldChecklist: React.FC<FieldChecklistProps> = ({
   fields,
   activeFieldKey,
   onSelectField,
+  onOpenImageInspector,
 }) => {
-  const fieldList: VerifiedField[] = (Object.keys(fields) as FieldKey[]).map(
-    (key) => fields[key]
-  );
+  // Track expanded rows — collapsed by default as requested
+  const [expandedKeys, setExpandedKeys] = useState<Set<FieldKey>>(new Set());
 
-  const detectedCount = fieldList.filter((f) => f.status === 'DETECTED').length;
-  const reviewCount = fieldList.filter((f) => f.status === 'LOW_CONFIDENCE').length;
-  const notCapturedCount = fieldList.filter((f) => f.status === 'NOT_CAPTURED').length;
-  const notDetectedCount = fieldList.filter((f) => f.status === 'NOT_DETECTED').length;
-  const totalCount = fieldList.length;
+  // If parent selects a field (e.g. clicked from image inspector), expand it
+  useEffect(() => {
+    if (activeFieldKey) {
+      setExpandedKeys(new Set([activeFieldKey]));
+    }
+  }, [activeFieldKey]);
+
+  const toggleField = (key: FieldKey) => {
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        // Progressive disclosure: keep focus clean by expanding one at a time
+        next.clear();
+        next.add(key);
+      }
+      return next;
+    });
+
+    if (onSelectField) {
+      onSelectField(key);
+    }
+  };
+
+  const handleExpandAll = () => {
+    if (expandedKeys.size === ORDERED_FIELD_KEYS.length) {
+      setExpandedKeys(new Set());
+    } else {
+      setExpandedKeys(new Set(ORDERED_FIELD_KEYS));
+    }
+  };
+
+  // Compute summary stats
+  const allFields = ORDERED_FIELD_KEYS.map((k) => fields[k]).filter(Boolean);
+  const detectedCount = allFields.filter((f) => f.status === 'DETECTED').length;
+  const reviewCount = allFields.filter((f) => f.status === 'LOW_CONFIDENCE').length;
+  const missingCount = allFields.filter((f) => f.status === 'NOT_DETECTED').length;
+  const allExpanded = expandedKeys.size === ORDERED_FIELD_KEYS.length;
 
   return (
-    <div className="space-y-3" id="field-checklist-container">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-        <h3 className="text-sm font-extrabold text-[#1F2937] uppercase tracking-wider flex items-center gap-2 flex-wrap">
-          <span>Statutory Declarations Audit</span>
-          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
-            {detectedCount} / {totalCount} Verified
-          </span>
-          {reviewCount > 0 && (
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A]">
-              {reviewCount} Review Required
+    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden" id="field-checklist-container">
+      {/* Section Header Strip */}
+      <div className="px-5 py-4 border-b border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div>
+          <div className="flex items-center gap-2">
+            <Scale className="w-4 h-4 text-emerald-800" />
+            <h2 className="text-sm font-extrabold text-slate-900 tracking-tight">
+              Mandatory Declarations Audit
+            </h2>
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+              6 of 6 Evaluated
             </span>
-          )}
-          {notCapturedCount > 0 && (
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
-              {notCapturedCount} Insufficient Evidence
-            </span>
-          )}
-          {notDetectedCount > 0 && (
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]">
-              {notDetectedCount} Missing
-            </span>
-          )}
-        </h3>
-        <span className="text-[11px] text-[#4B5563] font-medium hidden sm:inline">
-          Legal Metrology (Packaged Commodities) Rules, 2011
-        </span>
+          </div>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Legal Metrology (Packaged Commodities) Rules, 2011 • Rule 6 Compliance Checklist
+          </p>
+        </div>
+
+        {/* Quick summary tally & Expand All toggle */}
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono">
+            <span className="text-emerald-700 font-bold">{detectedCount} Detected</span>
+            {reviewCount > 0 && (
+              <>
+                <span className="text-slate-300">•</span>
+                <span className="text-amber-700 font-bold">{reviewCount} Review</span>
+              </>
+            )}
+            {missingCount > 0 && (
+              <>
+                <span className="text-slate-300">•</span>
+                <span className="text-rose-700 font-bold">{missingCount} Missing</span>
+              </>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleExpandAll}
+            className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 underline underline-offset-2 transition-colors cursor-pointer"
+          >
+            {allExpanded ? 'Collapse All' : 'Expand All'}
+          </button>
+        </div>
       </div>
 
-      <div className="space-y-2.5">
-        {fieldList.map((field) => {
-          const isSelected = activeFieldKey === field.key;
+      {/* Accordion Rows List */}
+      <div className="divide-y divide-slate-100">
+        {ORDERED_FIELD_KEYS.map((key, index) => {
+          const field = fields[key];
+          if (!field) return null;
 
-          let borderClass = 'border-[#D1D5DB] hover:border-stone-400 bg-white';
-          if (isSelected) {
-            borderClass = 'border-[#166534] ring-1 ring-[#166534] bg-[#F0FDF4]/30';
-          } else if (field.status === 'LOW_CONFIDENCE') {
-            borderClass = 'border-[#FDE68A] bg-[#FFFBEB]/40';
-          } else if (field.status === 'NOT_CAPTURED') {
-            borderClass = 'border-[#BFDBFE] bg-[#EFF6FF]/40';
-          } else if (field.status === 'NOT_DETECTED') {
-            borderClass = 'border-[#FECACA] bg-[#FEF2F2]/40';
-          }
+          const isExpanded = expandedKeys.has(key);
+          const isSelected = activeFieldKey === key;
+
+          // Status indicator config
+          const isDetected = field.status === 'DETECTED';
+          const isReview = field.status === 'LOW_CONFIDENCE';
+          const isMissing = field.status === 'NOT_DETECTED';
+
+          const statusBorder = isSelected
+            ? 'ring-2 ring-emerald-600 ring-inset bg-emerald-50/20'
+            : isExpanded
+            ? 'bg-slate-50/40'
+            : 'hover:bg-slate-50/70';
 
           return (
             <div
               key={field.key}
-              id={`field-card-${field.key}`}
-              onClick={() => onSelectField && onSelectField(field.key)}
-              className={`rounded-xl border p-3.5 sm:p-4 transition-all duration-150 cursor-pointer shadow-2xs ${borderClass}`}
+              id={`field-row-${field.key}`}
+              className={`transition-colors ${statusBorder}`}
             >
-              {/* Row Header */}
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-extrabold text-[#1F2937]">
-                      {field.title}
-                    </span>
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#F7F8F5] text-[#4B5563] border border-[#D1D5DB]">
-                      {field.legalRule}
-                    </span>
+              {/* Row Header — Always visible, fast-scan summary */}
+              <button
+                type="button"
+                onClick={() => toggleField(field.key)}
+                aria-expanded={isExpanded}
+                className="w-full text-left px-5 py-3.5 flex items-center justify-between gap-3 cursor-pointer group select-none"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Status Icon */}
+                  <div className="shrink-0">
+                    {isDetected && (
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                    )}
+                    {isReview && (
+                      <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                        <AlertTriangle className="w-4 h-4" />
+                      </div>
+                    )}
+                    {isMissing && (
+                      <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-rose-700">
+                        <XCircle className="w-4 h-4" />
+                      </div>
+                    )}
                   </div>
-                  <p className="text-[11px] text-[#4B5563] mt-0.5">{field.description}</p>
+
+                  {/* Field Number + Name + Rule Citation */}
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[11px] font-mono font-bold text-slate-400">
+                        0{index + 1}.
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-900 transition-colors">
+                        {field.title}
+                      </span>
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                        {field.legalRule}
+                      </span>
+                    </div>
+
+                    {/* Collapsed single-line hint for non-detected or warnings */}
+                    {!isExpanded && (isReview || isMissing) && (
+                      <p className="text-[11px] text-amber-700 font-medium truncate mt-0.5">
+                        {field.warning || field.explanation}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="shrink-0">
+                {/* Right: Status Pill & Chevron */}
+                <div className="flex items-center gap-2.5 shrink-0">
                   <FieldStatusPill status={field.status} confidence={field.confidence} />
-                </div>
-              </div>
-
-              {/* Extracted Declaration Snippet */}
-              <div className="bg-[#F7F8F5] rounded-lg p-2.5 border border-[#D1D5DB] my-2 text-xs">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold block mb-0.5">
-                  Extracted Declaration Text:
-                </span>
-                {field.extractedText ? (
-                  <p className="font-mono text-[#1F2937] font-medium text-xs break-words">
-                    &ldquo;{field.extractedText}&rdquo;
-                  </p>
-                ) : field.status === 'NOT_CAPTURED' ? (
-                  <p className="text-[#1D4ED8] font-mono text-xs font-semibold">
-                    [DECLARATION PANEL NOT CAPTURED IN SUBMITTED IMAGES]
-                  </p>
-                ) : (
-                  <p className="text-[#B91C1C] font-mono text-xs font-semibold">
-                    [NO MATCHING TEXT REGION DETECTED]
-                  </p>
-                )}
-                {field.detectedFormat && (
-                  <div className="mt-1 text-[10px] text-[#4B5563] font-medium">
-                    Pattern Match: <span className="font-semibold text-[#1F2937]">{field.detectedFormat}</span>
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-slate-400 group-hover:text-slate-700 transition-transform duration-200 ${
+                      isExpanded ? 'rotate-180 text-emerald-800' : ''
+                    }`}
+                  >
+                    <ChevronDown className="w-4 h-4" />
                   </div>
-                )}
-              </div>
-
-              {/* Three Levels of Verification Matrix */}
-              <div className="grid grid-cols-3 gap-2 py-1.5 border-t border-[#D1D5DB] mt-2 text-[10px]">
-                <div className="flex items-center gap-1.5">
-                  {field.level1Presence ? (
-                    <Check className="w-3.5 h-3.5 text-[#15803D] shrink-0" />
-                  ) : field.status === 'NOT_CAPTURED' ? (
-                    <HelpCircle className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
-                  ) : (
-                    <XCircle className="w-3.5 h-3.5 text-[#B91C1C] shrink-0" />
-                  )}
-                  <span className={field.level1Presence ? 'text-[#1F2937] font-medium' : field.status === 'NOT_CAPTURED' ? 'text-[#1D4ED8] font-semibold' : 'text-[#B91C1C] font-bold'}>
-                    Level 1: {field.status === 'NOT_CAPTURED' ? 'Uncaptured' : 'Presence'}
-                  </span>
                 </div>
+              </button>
 
-                <div className="flex items-center gap-1.5">
-                  {field.level2FormatValid ? (
-                    <Check className="w-3.5 h-3.5 text-[#15803D] shrink-0" />
-                  ) : (
-                    <XCircle className="w-3.5 h-3.5 text-[#B91C1C] shrink-0" />
-                  )}
-                  <span className={field.level2FormatValid ? 'text-[#1F2937] font-medium' : 'text-[#B91C1C] font-bold'}>
-                    Level 2: Format
-                  </span>
-                </div>
+              {/* Progressive Disclosure Body — Full Technical Details */}
+              <AnimatePresence initial={false}>
+                {isExpanded && (
+                  <motion.div
+                    key={`content-${field.key}`}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-5 pt-1 space-y-3.5 text-xs">
+                      {/* Legal requirement description */}
+                      <p className="text-slate-600 text-[11px] leading-relaxed">
+                        <strong className="text-slate-800 font-semibold">Statutory Rule: </strong>
+                        {field.description}
+                      </p>
 
-                <div className="flex items-center gap-1.5">
-                  {field.level3ReadabilityGood ? (
-                    <Check className="w-3.5 h-3.5 text-[#15803D] shrink-0" />
-                  ) : (
-                    <AlertTriangle className="w-3.5 h-3.5 text-[#B45309] shrink-0" />
-                  )}
-                  <span className={field.level3ReadabilityGood ? 'text-[#1F2937] font-medium' : 'text-[#B45309] font-bold'}>
-                    Level 3: Readability
-                  </span>
-                </div>
-              </div>
+                      {/* Extracted Declaration Snippet */}
+                      <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">
+                            Extracted Declaration Text
+                          </span>
+                          {field.detectedFormat && (
+                            <span className="text-[10px] bg-slate-200/70 text-slate-700 px-2 py-0.5 rounded font-mono">
+                              Pattern: {field.detectedFormat}
+                            </span>
+                          )}
+                        </div>
 
-              {/* Plain Language Explanation */}
-              <div className="mt-2 pt-2 border-t border-[#D1D5DB] text-xs">
-                <p className="text-[#4B5563] leading-relaxed font-normal">
-                  <strong className="text-[#1F2937] font-semibold">Assessment:</strong> {field.explanation}
-                </p>
+                        {field.extractedText ? (
+                          <p className="font-mono text-slate-900 bg-white p-2 rounded-lg border border-slate-200/90 text-xs font-medium break-words select-all">
+                            &ldquo;{field.extractedText}&rdquo;
+                          </p>
+                        ) : (
+                          <div className="p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs font-semibold flex items-center gap-1.5">
+                            <XCircle className="w-3.5 h-3.5 shrink-0" />
+                            <span>[NO MATCHING TEXT REGION DETECTED ON SCANNED SURFACES]</span>
+                          </div>
+                        )}
+                      </div>
 
-                {field.warning && (
-                  <div className="mt-1.5 flex items-start gap-1.5 text-[#B45309] bg-[#FFFBEB] p-2 rounded-lg border border-[#FDE68A] text-[11px]">
-                    <AlertTriangle className="w-3.5 h-3.5 text-[#B45309] shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold">Inspector Alert: </span>
-                      {field.warning}
-                      {field.remedy && (
-                        <span className="block mt-0.5 text-[#1F2937] font-medium">
-                          <strong>Recommended Action: </strong>
-                          {field.remedy}
-                        </span>
+                      {/* Three Levels of Verification Matrix */}
+                      <div className="bg-slate-50/80 rounded-xl p-3 border border-slate-200">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 font-mono">
+                          3-Level Verification Matrix (Legal Metrology Rules, 2011)
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                          <div className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200/70">
+                            {field.level1Presence ? (
+                              <Check className="w-4 h-4 text-emerald-700 shrink-0" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                            )}
+                            <div>
+                              <span className="font-bold block text-slate-800 text-[11px]">Level 1: Presence</span>
+                              <span className="text-[10px] text-slate-500">
+                                {field.level1Presence ? 'Present on label' : 'Missing declaration'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200/70">
+                            {field.level2FormatValid ? (
+                              <Check className="w-4 h-4 text-emerald-700 shrink-0" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                            )}
+                            <div>
+                              <span className="font-bold block text-slate-800 text-[11px]">Level 2: Format</span>
+                              <span className="text-[10px] text-slate-500">
+                                {field.level2FormatValid ? 'Complies with syntax' : 'Invalid format'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200/70">
+                            {field.level3ReadabilityGood ? (
+                              <Check className="w-4 h-4 text-emerald-700 shrink-0" />
+                            ) : (
+                              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                            )}
+                            <div>
+                              <span className="font-bold block text-slate-800 text-[11px]">Level 3: Clarity</span>
+                              <span className="text-[10px] text-slate-500">
+                                {field.level3ReadabilityGood ? 'High OCR readability' : 'Needs clarification'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Plain Language Assessment */}
+                      <div className="text-xs space-y-2">
+                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                          <span className="font-bold text-slate-800 block text-[11px] mb-0.5">
+                            Automated Compliance Assessment:
+                          </span>
+                          <p className="text-slate-600 leading-relaxed text-xs font-normal">
+                            {field.explanation}
+                          </p>
+                        </div>
+
+                        {/* Inspector Warning & Statutory Remedy */}
+                        {field.warning && (
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-950 text-xs">
+                            <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                            <div className="space-y-1">
+                              <span className="font-bold block text-amber-900">
+                                Regulatory Alert:
+                              </span>
+                              <p className="text-amber-900 leading-snug">{field.warning}</p>
+                              {field.remedy && (
+                                <p className="text-slate-700 pt-1 text-[11px]">
+                                  <strong className="text-slate-900">Statutory Action: </strong>
+                                  {field.remedy}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Inspector Action: View on Scanned Image */}
+                      {onOpenImageInspector && (
+                        <div className="pt-1 flex items-center justify-end">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOpenImageInspector(field.key);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 transition-colors cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>Locate Bounding Box on Image</span>
+                          </button>
+                        </div>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </AnimatePresence>
             </div>
           );
         })}

@@ -31,7 +31,7 @@ export interface RawOcrBox {
   y: number;
   width: number;
   height: number;
-  bbox?: number[][];
+  bbox?: [number, number][];
 }
 
 export interface VerifiedField {

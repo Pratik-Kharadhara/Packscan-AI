@@ -6,10 +6,13 @@ import {
   Filter,
   History,
   Eye,
+  Calendar,
   RotateCcw,
   CheckCircle2,
   AlertTriangle,
   XCircle,
+  FileSpreadsheet,
+  Download,
 } from 'lucide-react';
 
 interface ScanHistoryPageProps {
@@ -51,16 +54,16 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-12" id="scan-history-page-root">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-[#D1D5DB] shadow-2xs p-6">
+      <div className="gov-card p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <History className="w-5 h-5 text-[#166534]" />
-              <h1 className="text-xl sm:text-2xl font-extrabold text-[#1F2937] tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#1F2937] tracking-tight">
                 Package Scan History &amp; Audit Logs
               </h1>
             </div>
-            <p className="text-xs sm:text-sm text-[#4B5563]">
+            <p className="text-xs sm:text-sm text-slate-500">
               Audit trail of scanned packaged commodities, OCR confidence scores, and Legal Metrology 2011 compliance records.
             </p>
           </div>
@@ -68,16 +71,16 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onNewScan}
-              className="bg-[#166534] hover:bg-[#14532D] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-2xs transition-all flex items-center gap-1.5"
+              className="btn-primary text-xs py-2.5 px-4"
             >
               <span>+ New Package Scan</span>
             </button>
             <button
               onClick={onResetScans}
-              className="p-2.5 rounded-xl border border-[#D1D5DB] hover:bg-[#F7F8F5] text-[#4B5563] text-xs font-medium"
+              className="btn-secondary p-2.5"
               title="Reset Demo Dataset"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 text-slate-600" />
             </button>
           </div>
         </div>
@@ -85,7 +88,7 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
         {/* Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-[#D1D5DB]">
           <div className="bg-[#F7F8F5] p-3 rounded-xl border border-[#D1D5DB]">
-            <span className="text-[11px] font-bold text-[#6B7280] uppercase block">
+            <span className="text-[11px] font-bold text-slate-500 uppercase block">
               Total Audited Scans
             </span>
             <span className="text-xl font-extrabold text-[#1F2937] font-mono mt-0.5 block">
@@ -126,22 +129,22 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="bg-white rounded-2xl border border-[#D1D5DB] shadow-2xs p-4 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="gov-card p-4 flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Search Bar */}
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-[#9CA3AF] absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by product, ID, brand..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-[#D1D5DB] text-xs text-[#1F2937] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 focus:ring-[#166534] focus:border-[#166534]"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-[#D1D5DB] text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#166534] bg-white"
           />
         </div>
 
         {/* Filter Pills */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <span className="text-xs font-bold text-[#6B7280] flex items-center gap-1 uppercase tracking-wider">
+          <span className="text-xs font-bold text-slate-400 flex items-center gap-1 uppercase tracking-wider">
             <Filter className="w-3.5 h-3.5" />
             Status:
           </span>
@@ -151,8 +154,8 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                 statusFilter === status
-                  ? 'bg-[#166534] text-white shadow-2xs'
-                  : 'bg-[#F7F8F5] text-[#4B5563] border border-[#D1D5DB] hover:bg-stone-100'
+                  ? 'bg-[#166534] text-white shadow-xs'
+                  : 'bg-[#F7F8F5] border border-[#D1D5DB] text-slate-600 hover:bg-slate-200'
               }`}
             >
               {status === 'ALL' ? 'All Records' : status.replace('_', ' ')}
@@ -162,7 +165,7 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="text-xs py-1.5 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[#1F2937] font-semibold focus:outline-none focus:ring-1 focus:ring-[#166534] focus:border-[#166534]"
+            className="text-xs py-1.5 px-3 rounded-lg border border-[#D1D5DB] bg-white text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-[#166534]"
           >
             <option value="ALL">All Categories</option>
             <option value="Personal Care">Personal Care</option>
@@ -173,12 +176,12 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
       </div>
 
       {/* Scans List / Table */}
-      <div className="bg-white rounded-2xl border border-[#D1D5DB] shadow-2xs overflow-hidden">
+      <div className="gov-card overflow-hidden p-0">
         {filteredScans.length === 0 ? (
-          <div className="p-12 text-center text-[#6B7280]">
-            <History className="w-10 h-10 text-[#D1D5DB] mx-auto mb-3" />
-            <h4 className="text-sm font-bold text-[#1F2937] mb-1">No matching scan logs found</h4>
-            <p className="text-xs text-[#6B7280] max-w-sm mx-auto mb-4">
+          <div className="p-12 text-center text-slate-500">
+            <History className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <h4 className="text-sm font-bold text-slate-800 mb-1">No matching scan logs found</h4>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
               Try adjusting your search criteria or status filter.
             </p>
             <button
@@ -187,15 +190,15 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
                 setStatusFilter('ALL');
                 setCategoryFilter('ALL');
               }}
-              className="text-xs font-bold text-[#166534] hover:underline"
+              className="text-xs font-bold text-blue-600 hover:underline"
             >
               Reset Filters
             </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-[#1F2937]">
-              <thead className="bg-[#F7F8F5] text-[11px] font-extrabold uppercase tracking-wider text-[#4B5563] border-b border-[#D1D5DB]">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50/90 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                 <tr>
                   <th className="py-3 px-4">Specimen / Package</th>
                   <th className="py-3 px-4">Category</th>
@@ -206,17 +209,17 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#D1D5DB]">
+              <tbody className="divide-y divide-slate-100">
                 {filteredScans.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-[#F7F8F5] transition-colors group cursor-pointer"
+                    className="hover:bg-[#F0FDF4]/50 transition-colors group cursor-pointer"
                     onClick={() => onSelectScan(item)}
                   >
                     {/* Thumbnail & Product */}
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-14 rounded-lg bg-[#F7F8F5] overflow-hidden shrink-0 border border-[#D1D5DB] flex items-center justify-center">
+                        <div className="w-12 h-14 rounded-lg bg-slate-900 overflow-hidden shrink-0 border border-slate-200 flex items-center justify-center">
                           <img
                             src={item.imageUrl}
                             alt={item.productName}
@@ -224,10 +227,10 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
                           />
                         </div>
                         <div>
-                          <div className="font-extrabold text-[#1F2937] text-xs sm:text-[13px] group-hover:text-[#166534] transition-colors">
+                          <div className="font-bold text-[#1F2937] text-xs sm:text-[13px] group-hover:text-[#166534] transition-colors">
                             {item.productName}
                           </div>
-                          <div className="text-[11px] font-mono text-[#6B7280]">
+                          <div className="text-[11px] font-mono text-slate-400">
                             {item.id} • {item.brandName}
                           </div>
                         </div>
@@ -235,17 +238,17 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
                     </td>
 
                     {/* Category */}
-                    <td className="py-3 px-4 font-semibold text-[#4B5563]">
+                    <td className="py-3 px-4 font-semibold text-slate-600">
                       {item.category}
                     </td>
 
                     {/* Timestamp */}
-                    <td className="py-3 px-4 font-mono text-[11px] text-[#6B7280] whitespace-nowrap">
+                    <td className="py-3 px-4 font-mono text-[11px] text-slate-500 whitespace-nowrap">
                       {item.timestamp}
                     </td>
 
                     {/* Detected count */}
-                    <td className="py-3 px-4 font-mono font-bold text-[#1F2937]">
+                    <td className="py-3 px-4 font-mono font-bold text-slate-800">
                       {item.detectedCount} / 6 Fields
                     </td>
 
@@ -254,10 +257,10 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
                       <span
                         className={
                           item.overallConfidence >= 90
-                            ? 'text-[#15803D]'
+                            ? 'text-emerald-700'
                             : item.overallConfidence >= 75
-                            ? 'text-[#B45309]'
-                            : 'text-[#B91C1C]'
+                            ? 'text-amber-700'
+                            : 'text-rose-700'
                         }
                       >
                         {item.overallConfidence.toFixed(1)}%
@@ -276,7 +279,7 @@ export const ScanHistoryPage: React.FC<ScanHistoryPageProps> = ({
                           e.stopPropagation();
                           onSelectScan(item);
                         }}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F7F8F5] hover:bg-[#166534] hover:text-white text-[#1F2937] border border-[#D1D5DB] text-xs font-bold transition-all shadow-2xs"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F7F8F5] border border-[#D1D5DB] hover:bg-[#166534] hover:text-white text-slate-700 text-xs font-bold transition-all shadow-2xs"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>View Details</span>

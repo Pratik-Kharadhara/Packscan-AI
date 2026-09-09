@@ -161,11 +161,131 @@ class ComplianceEngine:
             )
 
         # Handle semantic date separation: only expiry date detected when mfg/pkg date is required (Rule 6(1)(d))
-        if field_name == "manufacture_date" and sub_fields.get("date_type") == "expiry_only":
+        if field_name == "manufacture_date":
+            if sub_fields.get("date_type") == "expiry_only":
+                return ComplianceCheck(
+                    field=field_name,
+                    status=CheckStatus.REVIEW,
+                    reason=f"{ref or 'Rule 6(1)(d)'}: Expiry date detected ({detected.value}), but mandatory month & year of manufacture/pre-packing is missing.",
+                    detected_value=detected_value,
+                    applicable_rule=ref,
+                    rule_reference=ref,
+                    rule_id=rule_id,
+                    legal_name=legal_name,
+                    confidence=confidence,
+                    evidence=evidence,
+                    bounding_boxes=bounding_boxes,
+                    validation_result="EXPIRY_ONLY",
+                    sub_fields=sub_fields,
+                )
+            elif sub_fields.get("date_type") == "packaging_date":
+                if detected.confidence is None or detected.confidence < getattr(rule, "minimum_confidence"):
+                    prefix = f"{ref}: " if ref else ""
+                    return ComplianceCheck(
+                        field=field_name,
+                        status=CheckStatus.REVIEW,
+                        reason=(
+                            f"{prefix}Packaging date declaration detected with confidence {detected.confidence or 0:.2f}, below "
+                            f"configured threshold of {getattr(rule, 'minimum_confidence'):.2f}."
+                        ),
+                        detected_value=detected_value,
+                        applicable_rule=ref,
+                        rule_reference=ref,
+                        rule_id=rule_id,
+                        legal_name=legal_name,
+                        confidence=confidence,
+                        evidence=evidence,
+                        bounding_boxes=bounding_boxes,
+                        validation_result="LOW_CONFIDENCE",
+                        sub_fields=sub_fields,
+                    )
+                prefix = f"{ref}: " if ref else ""
+                reason = f"{prefix}Compliant pre-packing/packaging date declaration detected: {detected.value}."
+                if sub_fields.get("use_by_date"):
+                    reason += f" (Use By: {sub_fields['use_by_date']})"
+                elif sub_fields.get("expiry_date"):
+                    reason += f" (Expiry: {sub_fields['expiry_date']})"
+                return ComplianceCheck(
+                    field=field_name,
+                    status=CheckStatus.PASS,
+                    reason=reason,
+                    detected_value=detected_value,
+                    applicable_rule=ref,
+                    rule_reference=ref,
+                    rule_id=rule_id,
+                    legal_name=legal_name,
+                    confidence=confidence,
+                    evidence=evidence,
+                    bounding_boxes=bounding_boxes,
+                    validation_result="VALID",
+                    sub_fields=sub_fields,
+                )
+
+        # Handle consumer care compliance under Legal Metrology Rule 6(2)
+        if field_name == "consumer_contact":
+            has_context = sub_fields.get("has_context", True)
+            has_contact = bool(
+                sub_fields.get("toll_free")
+                or sub_fields.get("phone")
+                or sub_fields.get("email")
+                or (detected.value and re.search(r"\b1800[- ]?\d{3,4}[- ]?\d{3,4}\b|(?:\+91[- ]?)?[6-9]\d{9}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", detected.value))
+            )
+
+            if not has_contact or not has_context:
+                prefix = f"{ref}: " if ref else ""
+                return ComplianceCheck(
+                    field=field_name,
+                    status=CheckStatus.REVIEW,
+                    reason=(
+                        f"{prefix}Declaration not visible or insufficient OCR evidence on photographed package surface. Manual verification recommended."
+                    ),
+                    detected_value=detected_value,
+                    applicable_rule=ref,
+                    rule_reference=ref,
+                    rule_id=rule_id,
+                    legal_name=legal_name,
+                    confidence=confidence,
+                    evidence=evidence,
+                    bounding_boxes=bounding_boxes,
+                    validation_result="INSUFFICIENT_EVIDENCE",
+                    sub_fields=sub_fields,
+                )
+
+            if detected.confidence is None or detected.confidence < getattr(rule, "minimum_confidence"):
+                prefix = f"{ref}: " if ref else ""
+                return ComplianceCheck(
+                    field=field_name,
+                    status=CheckStatus.REVIEW,
+                    reason=(
+                        f"{prefix}Declaration detected with confidence {detected.confidence or 0:.2f}, below "
+                        f"configured threshold of {getattr(rule, 'minimum_confidence'):.2f}."
+                    ),
+                    detected_value=detected_value,
+                    applicable_rule=ref,
+                    rule_reference=ref,
+                    rule_id=rule_id,
+                    legal_name=legal_name,
+                    confidence=confidence,
+                    evidence=evidence,
+                    bounding_boxes=bounding_boxes,
+                    validation_result="LOW_CONFIDENCE",
+                    sub_fields=sub_fields,
+                )
+
+            prefix = f"{ref}: " if ref else ""
+            desc_parts = [f"Compliant consumer care details detected: {detected.value}."]
+            if sub_fields.get("office"):
+                desc_parts.append(f"Person/Office: {sub_fields['office']}.")
+            if sub_fields.get("company"):
+                desc_parts.append(f"Entity: {sub_fields['company']}.")
+            if sub_fields.get("address"):
+                desc_parts.append("Address verified.")
+            reason = f"{prefix}{' '.join(desc_parts)}"
+
             return ComplianceCheck(
                 field=field_name,
-                status=CheckStatus.REVIEW,
-                reason=f"{ref or 'Rule 6(1)(d)'}: Expiry date detected ({detected.value}), but mandatory month & year of manufacture/pre-packing is missing.",
+                status=CheckStatus.PASS,
+                reason=reason,
                 detected_value=detected_value,
                 applicable_rule=ref,
                 rule_reference=ref,
@@ -174,7 +294,7 @@ class ComplianceEngine:
                 confidence=confidence,
                 evidence=evidence,
                 bounding_boxes=bounding_boxes,
-                validation_result="EXPIRY_ONLY",
+                validation_result="VALID",
                 sub_fields=sub_fields,
             )
 

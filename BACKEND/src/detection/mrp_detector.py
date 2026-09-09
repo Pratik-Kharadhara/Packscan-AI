@@ -9,6 +9,7 @@ from src.detection._helpers import detected_field
 from src.detection.base_detector import BaseDetector, DetectedField
 from src.detection.content_validator import is_plausible_mrp_amount
 from src.detection.patterns import compile_any, load_detection_patterns
+from src.detection.semantic_associator import SemanticAssociator
 from src.ocr.ocr_service import OCRResult
 from src.ocr.ocr_types import OCRDetection, Point
 
@@ -188,14 +189,54 @@ class MRPDetector(BaseDetector):
         return candidates
 
     def detect(self, ocr_result: OCRResult) -> DetectedField:
+        # 1. First run 2D semantic label-to-value association
+        associations = SemanticAssociator().associate(ocr_result)
+        mrp_assoc = associations.get("mrp")
+        if mrp_assoc:
+            amt = mrp_assoc.value_match.extra.get("amount", mrp_assoc.value.replace("₹", "").strip())
+            amt_clean = str(amt).replace(",", ".")
+            tax_included = bool(mrp_assoc.supporting_evidence)
+            tax_evidence = ", ".join(e.matched_text for e in mrp_assoc.supporting_evidence) if tax_included else None
+
+            display_value = f"Rs. {amt_clean}"
+            note = (
+                "MRP context, numeric price, and statutory tax declaration detected."
+                if tax_included
+                else "MRP context and numeric price detected."
+            )
+            sub_fields: dict[str, str] = {
+                "amount": amt_clean,
+                "currency": "INR",
+                "tax_included": "true" if tax_included else "false",
+                "detection_method": "semantic_association",
+            }
+            if tax_evidence:
+                sub_fields["supporting_evidence"] = tax_evidence
+
+            first_det = mrp_assoc.value_match.detection
+            return detected_field(
+                self.field_name,
+                first_det,
+                display_value,
+                note,
+                confidence=mrp_assoc.confidence,
+                source_line=mrp_assoc.label_match.detection if mrp_assoc.label_match else first_det,
+                raw_text=f"{mrp_assoc.label_text} {amt}",
+                normalized_text=f"{mrp_assoc.label_text} {amt}",
+                matched_pattern="mrp_semantic_association",
+                sub_fields=sub_fields,
+                rule_reference="Rule 6(1)(e)",
+                bounding_boxes=mrp_assoc.bounding_boxes,
+            )
+
         all_candidates: list[MRPCandidate] = []
 
-        # 1. Search grouped lines and stacked lines first
+        # 2. Search grouped lines and stacked lines first
         line_items = list(ocr_result.grouped_lines) + list(ocr_result.stacked_lines)
         for line in line_items:
             all_candidates.extend(self._extract_candidates(line))
 
-        # 2. Search raw detections as well
+        # 3. Search raw detections as well
         for det in ocr_result.detections:
             all_candidates.extend(self._extract_candidates(det))
 
