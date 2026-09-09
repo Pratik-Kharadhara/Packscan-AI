@@ -1,0 +1,200 @@
+{
+  "Product1_1.jpeg": {
+    "file": "Product1_1.jpeg",
+    "elapsed_sec": 21.12,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 26,
+    "ocr_avg_confidence": 0.6348,
+    "detected_fields_count": 1,
+    "detected_fields": {
+      "product_identity": {
+        "value": "Salt",
+        "confidence": 0.9749,
+        "matched_pattern": "commodity_descriptor"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  },
+  "Product1_2.jpeg": {
+    "file": "Product1_2.jpeg",
+    "elapsed_sec": 26.05,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 117,
+    "ocr_avg_confidence": 0.3171,
+    "detected_fields_count": 1,
+    "detected_fields": {
+      "net_quantity": {
+        "value": "9 l",
+        "confidence": 0.8637,
+        "matched_pattern": "isolated_value"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  },
+  "Product1_3.jpeg": {
+    "file": "Product1_3.jpeg",
+    "elapsed_sec": 23.76,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 101,
+    "ocr_avg_confidence": 0.3708,
+    "detected_fields_count": 1,
+    "detected_fields": {
+      "net_quantity": {
+        "value": "1 l",
+        "confidence": 0.2854,
+        "matched_pattern": "isolated_value"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  },
+  "Product1_4.jpeg": {
+    "file": "Product1_4.jpeg",
+    "elapsed_sec": 19.46,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 40,
+    "ocr_avg_confidence": 0.6812,
+    "detected_fields_count": 2,
+    "detected_fields": {
+      "product_identity": {
+        "value": "Ist Floor;, ' 43, Jawaharlal Nehru Road, mkt by:: Tata Consumer Products Limited,Tata Cente fssal 10014031001021",
+        "confidence": 0.6282,
+        "matched_pattern": "explicit_label"
+      },
+      "manufacturer_packer": {
+        "value": "Manufacturer: Ist Floor;, ' 43, Jawaharlal Nehru Road, mkt by:: Tata Consumer Products Limited,Tata Cente fssal 10014031001021",
+        "confidence": 0.6282,
+        "matched_pattern": "role_context"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  },
+  "Product1_5.jpeg": {
+    "file": "Product1_5.jpeg",
+    "elapsed_sec": 26.12,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 71,
+    "ocr_avg_confidence": 0.4766,
+    "detected_fields_count": 5,
+    "detected_fields": {
+      "product_identity": {
+        "value": "mkt by:: Tata Ist Floor; 43, Jawaharlal | Consumer Products Limited Tata Cente Nehru Road, fssai",
+        "confidence": 0.4543,
+        "matched_pattern": "explicit_label"
+      },
+      "manufacturer_packer": {
+        "value": "Manufacturer: mkt by:: Tata Ist Floor; 43, Jawaharlal | Consumer Products Limited Tata Cente Nehru Road, fssai",
+        "confidence": 0.4543,
+        "matched_pattern": "role_context"
+      },
+      "net_quantity": {
+        "value": "0 n",
+        "confidence": 0.0454,
+        "matched_pattern": "context_and_value"
+      },
+      "mrp": {
+        "value": "Rs. 32,00",
+        "confidence": 0.0877,
+        "matched_pattern": "mrp_price"
+      },
+      "consumer_contact": {
+        "value": "1800 108 4488",
+        "confidence": 0.7862,
+        "matched_pattern": "context_contact"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  },
+  "Product1_6.jpeg": {
+    "file": "Product1_6.jpeg",
+    "elapsed_sec": 25.22,
+    "selected_rotation": 180,
+    "operations": [
+      "rgb_conversion",
+      "rotate_180"
+    ],
+    "ocr_detection_count": 71,
+    "ocr_avg_confidence": 0.4836,
+    "detected_fields_count": 4,
+    "detected_fields": {
+      "product_identity": {
+        "value": "MkU by: Tala Consumer Products Limited Tata Nehru Road, Issat Cenbre ,",
+        "confidence": 0.4312,
+        "matched_pattern": "explicit_label"
+      },
+      "manufacturer_packer": {
+        "value": "Manufacturer: Kolkata mfg by:: Tata Chemicals Limited P 0. (361 345, District-Devbhumi [ Dwarka,",
+        "confidence": 0.6525,
+        "matched_pattern": "role_context"
+      },
+      "mrp": {
+        "value": "Rs. 32.00",
+        "confidence": 0.5802,
+        "matched_pattern": "mrp_with_taxes"
+      },
+      "consumer_contact": {
+        "value": "1800 108 4488",
+        "confidence": 0.7074,
+        "matched_pattern": "context_contact"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  },
+  "Product1_7.jpeg": {
+    "file": "Product1_7.jpeg",
+    "elapsed_sec": 24.17,
+    "selected_rotation": 0,
+    "operations": [
+      "rgb_conversion"
+    ],
+    "ocr_detection_count": 41,
+    "ocr_avg_confidence": 0.3885,
+    "detected_fields_count": 4,
+    "detected_fields": {
+      "product_identity": {
+        "value": "CONSUMER CARE DEVAILS; TATA CONSUMER PRODUCTS Ld; CUSTOMH c",
+        "confidence": 0.3424,
+        "matched_pattern": "explicit_label"
+      },
+      "manufacture_date": {
+        "value": "AuG/26",
+        "confidence": 0.5281,
+        "matched_pattern": "packaging_date"
+      },
+      "mrp": {
+        "value": "Rs. 32.00",
+        "confidence": 0.4904,
+        "matched_pattern": "mrp_with_taxes"
+      },
+      "consumer_contact": {
+        "value": "9571617161",
+        "confidence": 0.5705,
+        "matched_pattern": "context_contact"
+      }
+    },
+    "overall_status": "NEEDS_REVIEW",
+    "warnings": []
+  }
+}

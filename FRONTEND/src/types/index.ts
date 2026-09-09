@@ -1,6 +1,6 @@
 export type ComplianceStatus = 'COMPLIANT' | 'NEEDS_REVIEW' | 'NON_COMPLIANT';
 
-export type FieldStatus = 'DETECTED' | 'LOW_CONFIDENCE' | 'NOT_DETECTED';
+export type FieldStatus = 'DETECTED' | 'LOW_CONFIDENCE' | 'NOT_DETECTED' | 'NOT_CAPTURED';
 
 export type FieldKey =
   | 'manufacturer'
@@ -21,6 +21,17 @@ export interface BoundingBox {
   height: number;
   status: FieldStatus;
   confidence: number;
+}
+
+export interface RawOcrBox {
+  id: string;
+  text: string;
+  confidence: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  bbox?: number[][];
 }
 
 export interface VerifiedField {
@@ -48,6 +59,7 @@ export interface PackagePanelImage {
   name: string;
   label: string; // e.g. 'Front Display Panel', 'Back Declarations', 'Side / MRP Stamp', etc.
   boundingBoxes?: BoundingBox[];
+  rawOcrBoxes?: RawOcrBox[];
 }
 
 export interface ScanResult {
@@ -68,6 +80,7 @@ export interface ScanResult {
   deviceSource: string;
   fields: Record<FieldKey, VerifiedField>;
   boundingBoxes: BoundingBox[];
+  rawOcrBoxes?: RawOcrBox[];
   summaryNote: string;
   imageQualityScore: number; // 0-100 (blur/glare assessment)
   processingTimeMs: number;

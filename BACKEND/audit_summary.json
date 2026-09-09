@@ -1,0 +1,221 @@
+[
+  {
+    "file": "Product1_1.jpeg",
+    "original_res": "1200x1600",
+    "original_channels": 3,
+    "ocr_input_res": "1200x1600",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 63.79,
+    "brightness_score": 123.06,
+    "quality_usable": true,
+    "quality_issues": [
+      "Minor blur detected (blur score: 63.8); OCR will proceed with caution."
+    ],
+    "ocr_detections_0deg": 26,
+    "ocr_avg_conf_0deg": 0.63,
+    "ocr_detections_180deg": 31,
+    "ocr_avg_conf_180deg": 0.34,
+    "fields_detected_0deg": {
+      "product_identity": "Salt"
+    },
+    "fields_detected_180deg": {
+      "product_identity": "Salt"
+    },
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  },
+  {
+    "file": "Product1_2.jpeg",
+    "original_res": "1280x960",
+    "original_channels": 3,
+    "ocr_input_res": "1280x960",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 200.85,
+    "brightness_score": 111.56,
+    "quality_usable": true,
+    "quality_issues": [],
+    "ocr_detections_0deg": 117,
+    "ocr_avg_conf_0deg": 0.32,
+    "ocr_detections_180deg": 119,
+    "ocr_avg_conf_180deg": 0.33,
+    "fields_detected_0deg": {},
+    "fields_detected_180deg": {},
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  },
+  {
+    "file": "Product1_3.jpeg",
+    "original_res": "1280x960",
+    "original_channels": 3,
+    "ocr_input_res": "1280x960",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 115.99,
+    "brightness_score": 114.24,
+    "quality_usable": true,
+    "quality_issues": [],
+    "ocr_detections_0deg": 101,
+    "ocr_avg_conf_0deg": 0.37,
+    "ocr_detections_180deg": 92,
+    "ocr_avg_conf_180deg": 0.32,
+    "fields_detected_0deg": {},
+    "fields_detected_180deg": {},
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  },
+  {
+    "file": "Product1_4.jpeg",
+    "original_res": "960x1280",
+    "original_channels": 3,
+    "ocr_input_res": "960x1280",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 94.81,
+    "brightness_score": 102.61,
+    "quality_usable": true,
+    "quality_issues": [],
+    "ocr_detections_0deg": 45,
+    "ocr_avg_conf_0deg": 0.23,
+    "ocr_detections_180deg": 40,
+    "ocr_avg_conf_180deg": 0.68,
+    "fields_detected_0deg": {
+      "product_identity": "TATA Salt",
+      "manufacturer_packer": "Manufacturer: Ist Floor;, ' 43, Jawaharlal Nehru Road, mkt by:: Tata Consumer Products Limited,Tata Cente fssal 10014031001021"
+    },
+    "fields_detected_180deg": {
+      "product_identity": "TATA Salt",
+      "manufacturer_packer": "Manufacturer: Ist Floor;, ' 43, Jawaharlal Nehru Road, mkt by:: Tata Consumer Products Limited,Tata Cente fssal 10014031001021"
+    },
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  },
+  {
+    "file": "Product1_5.jpeg",
+    "original_res": "960x1280",
+    "original_channels": 3,
+    "ocr_input_res": "960x1280",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 133.68,
+    "brightness_score": 113.42,
+    "quality_usable": true,
+    "quality_issues": [],
+    "ocr_detections_0deg": 64,
+    "ocr_avg_conf_0deg": 0.13,
+    "ocr_detections_180deg": 71,
+    "ocr_avg_conf_180deg": 0.48,
+    "fields_detected_0deg": {
+      "product_identity": "Salt is made wilh technology that guarantees] Vacuum",
+      "manufacturer_packer": "Manufacturer: mkt by:: Tata Ist Floor; 43, Jawaharlal | Consumer Products Limited Tata Cente Nehru Road, fssai",
+      "net_quantity": "2 g",
+      "mrp": "Rs. 32.00",
+      "consumer_contact": "1800 108 4488"
+    },
+    "fields_detected_180deg": {
+      "product_identity": "Salt is made wilh technology that guarantees] Vacuum",
+      "manufacturer_packer": "Manufacturer: mkt by:: Tata Ist Floor; 43, Jawaharlal | Consumer Products Limited Tata Cente Nehru Road, fssai",
+      "net_quantity": "2 g",
+      "mrp": "Rs. 32.00",
+      "consumer_contact": "1800 108 4488"
+    },
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  },
+  {
+    "file": "Product1_6.jpeg",
+    "original_res": "960x1280",
+    "original_channels": 3,
+    "ocr_input_res": "960x1280",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 136.71,
+    "brightness_score": 115.33,
+    "quality_usable": true,
+    "quality_issues": [],
+    "ocr_detections_0deg": 70,
+    "ocr_avg_conf_0deg": 0.18,
+    "ocr_detections_180deg": 71,
+    "ocr_avg_conf_180deg": 0.48,
+    "fields_detected_0deg": {
+      "product_identity": "Tala Salt'$ Recyclable\" ett pA",
+      "manufacturer_packer": "Manufacturer: Kolkata mfg by:: Tata Chemicals Limited P 0. (361 345, District-Devbhumi [ Dwarka,",
+      "mrp": "Rs. 32.00",
+      "consumer_contact": "1800 108 4488"
+    },
+    "fields_detected_180deg": {
+      "product_identity": "Tala Salt'$ Recyclable\" ett pA",
+      "manufacturer_packer": "Manufacturer: Kolkata mfg by:: Tata Chemicals Limited P 0. (361 345, District-Devbhumi [ Dwarka,",
+      "mrp": "Rs. 32.00",
+      "consumer_contact": "1800 108 4488"
+    },
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  },
+  {
+    "file": "Product1_7.jpeg",
+    "original_res": "960x1280",
+    "original_channels": 3,
+    "ocr_input_res": "960x1280",
+    "ocr_input_channels": 3,
+    "ocr_input_dtype": "uint8",
+    "did_resize": false,
+    "preprocessing_ops": [
+      "rgb_conversion"
+    ],
+    "blur_score": 99.84,
+    "brightness_score": 108.94,
+    "quality_usable": true,
+    "quality_issues": [],
+    "ocr_detections_0deg": 41,
+    "ocr_avg_conf_0deg": 0.39,
+    "ocr_detections_180deg": 43,
+    "ocr_avg_conf_180deg": 0.22,
+    "fields_detected_0deg": {
+      "product_identity": "Tata Salt's Recyclable",
+      "manufacture_date": "AuG/26",
+      "mrp": "Rs. 32.00",
+      "consumer_contact": "9571617161"
+    },
+    "fields_detected_180deg": {
+      "product_identity": "Tata Salt's Recyclable",
+      "manufacture_date": "AuG/26",
+      "mrp": "Rs. 32.00",
+      "consumer_contact": "9571617161"
+    },
+    "compliance_0deg": "NEEDS_REVIEW",
+    "compliance_180deg": "NEEDS_REVIEW",
+    "pipeline_warnings": []
+  }
+]

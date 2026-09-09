@@ -4,6 +4,13 @@
   "note": "Decision-support first-level screening profile implementing Rules 6, 7, 8, 9, 10, 13 of The Legal Metrology (Packaged Commodities) Rules, 2011.",
   "fields": {
     "product_identity": {
+      "rule_id": "LMR-2011-R6-1-B",
+      "source_rule": "The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(b)",
+      "requirement": "The common or generic names of the commodity contained in the package and in case of packages with more than one product, the name and number or quantity of each product.",
+      "field": "product_identity",
+      "applicability": "All packaged commodities intended for retail sale",
+      "validation": "Must identify generic/common name or prominent commodity title",
+      "notes": "Generic section headers (e.g. nutrition, ingredients, care) must not be substituted for commodity identity.",
       "required": true,
       "minimum_confidence": 0.65,
       "value_pattern": ".+",
@@ -12,6 +19,13 @@
       "legal_name": "Common or Generic Name of Commodity"
     },
     "manufacturer_packer": {
+      "rule_id": "LMR-2011-R6-1-A",
+      "source_rule": "The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(a) & Rule 10",
+      "requirement": "The name and complete address of the manufacturer, or where manufacturer is not the packer, the name and complete address of the manufacturer and packer, or in case of imported packages, the name and complete address of the importer.",
+      "field": "manufacturer_packer",
+      "applicability": "All pre-packed commodities",
+      "validation": "Must indicate name and address with identifiable role (manufacturer, packer, marketer, importer)",
+      "notes": "Postal PIN codes provide strong supporting evidence of address completeness.",
       "required": true,
       "minimum_confidence": 0.65,
       "value_pattern": ".+",
@@ -20,6 +34,13 @@
       "legal_name": "Name and Complete Address of Manufacturer / Packer / Marketer"
     },
     "net_quantity": {
+      "rule_id": "LMR-2011-R6-1-C",
+      "source_rule": "The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(c) & Rule 13",
+      "requirement": "The net quantity, in terms of the standard unit of weight or measure, of the commodity contained in the package.",
+      "field": "net_quantity",
+      "applicability": "All packaged commodities with quantifiable contents",
+      "validation": "Standard SI metric units (g, kg, ml, l, mg, pcs, units, n, u) with explicit context",
+      "notes": "Must not mistake nutrition table quantities or date years for net quantity declaration.",
       "required": true,
       "minimum_confidence": 0.65,
       "value_pattern": "^\\d+(?:[.,]\\d+)?\\s*(?:mg|g|gm|gms|kg|ml|l|litre|litres|pcs?|pieces?|units?|n|u)$",
@@ -28,6 +49,13 @@
       "legal_name": "Net Quantity in Standard Metric Units"
     },
     "manufacture_date": {
+      "rule_id": "LMR-2011-R6-1-D",
+      "source_rule": "The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(d)",
+      "requirement": "The month and year in which the commodity is manufactured or pre-packed or imported.",
+      "field": "manufacture_date",
+      "applicability": "All packages except commodities exempted under Rule 26",
+      "validation": "Month and year of manufacture or packaging (excluding expiry date alone)",
+      "notes": "Best Before or Use By dates alone do NOT satisfy the mandatory pre-packing/manufacturing date requirement.",
       "required": true,
       "minimum_confidence": 0.65,
       "value_pattern": ".+",
@@ -36,6 +64,13 @@
       "legal_name": "Month and Year of Manufacture / Pre-packing"
     },
     "mrp": {
+      "rule_id": "LMR-2011-R6-1-E",
+      "source_rule": "The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(e) & Rule 3(m)",
+      "requirement": "The retail sale price of the package in terms of Maximum Retail Price (MRP) inclusive of all taxes.",
+      "field": "mrp",
+      "applicability": "All packaged commodities intended for retail sale",
+      "validation": "Currency designation with numeric amount and 'inclusive of all taxes' declaration",
+      "notes": "Arbitrary numbers without retail price context or currency formatting must be rejected.",
       "required": true,
       "minimum_confidence": 0.65,
       "value_pattern": "^(?:₹|rs\\.?|inr)\\s*\\d+(?:[.,]\\d{1,2})?$",
@@ -44,6 +79,13 @@
       "legal_name": "Maximum Retail Price (MRP) inclusive of all taxes"
     },
     "consumer_contact": {
+      "rule_id": "LMR-2011-R6-2",
+      "source_rule": "The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(2)",
+      "requirement": "Every package shall bear the name, address, telephone number, and e-mail address of the person who can be contacted by the consumer in case of a complaint.",
+      "field": "consumer_contact",
+      "applicability": "All retail packaged commodities",
+      "validation": "Toll-free helpline (1800), verified phone number, or complaint email address with consumer care context",
+      "notes": "Barcode numbers and license numbers must not be treated as consumer grievance contacts.",
       "required": true,
       "minimum_confidence": 0.65,
       "value_pattern": "(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|(?:\\+91[- ]?)?[6-9]\\d{9}|1800[- ]?\\d{3,4}[- ]?\\d{3,4})",

@@ -33,6 +33,18 @@ DEFAULT_MIN_OCR_CONFIDENCE = 0.70
 OCR_LANGUAGES = ("en",)
 USE_GPU_FOR_OCR = False
 
+# Tunable EasyOCR recognition parameters
+DEFAULT_OCR_MAG_RATIO = 1.3
+DEFAULT_TEXT_THRESHOLD = 0.65
+DEFAULT_LOW_TEXT = 0.35
+DEFAULT_LINK_THRESHOLD = 0.4
+ENABLE_SECONDARY_OCR_PASS = True
+
+# Preprocessing & Orientation defaults
+DEFAULT_AUTO_ORIENTATION = True
+DEFAULT_APPLY_CLAHE = False
+DEFAULT_PRESERVE_RGB = True
+
 # Calibrated image-quality and preprocessing thresholds.
 # Hard thresholds cause hard rejection (usable=False).
 # Soft thresholds generate advisory warnings without blocking OCR.

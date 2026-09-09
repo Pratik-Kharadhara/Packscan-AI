@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from enum import StrEnum
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -35,8 +36,15 @@ class ComplianceCheck(BaseModel):
     field: str
     status: CheckStatus
     reason: str
-    rule_reference: str | None = None
+    detected_value: str | None = None
+    confidence: float | None = None
     evidence: str | None = None
+    bounding_boxes: list[Any] = Field(default_factory=list)
+    applicable_rule: str | None = None
+    rule_reference: str | None = None
+    rule_id: str | None = None
+    legal_name: str | None = None
+    validation_result: str | None = None
     sub_fields: dict[str, str] = Field(default_factory=dict)
 
 
@@ -68,6 +76,7 @@ class ComplianceEngine:
                     field="image_quality",
                     status=CheckStatus.REVIEW,
                     reason="; ".join(image_quality.issues),
+                    validation_result="LOW_IMAGE_QUALITY",
                 )
             )
 
@@ -79,7 +88,9 @@ class ComplianceEngine:
                         field=field_name,
                         status=CheckStatus.NOT_APPLICABLE,
                         reason="This declaration is not required by the active screening profile.",
+                        applicable_rule=ref,
                         rule_reference=ref,
+                        validation_result="NOT_APPLICABLE",
                     )
                 )
                 continue
@@ -101,16 +112,28 @@ class ComplianceEngine:
         image_usable: bool,
     ) -> ComplianceCheck:
         ref = getattr(rule, "rule_reference", None) or (detected.rule_reference if detected else None)
+        rule_id = getattr(rule, "rule_id", None)
+        legal_name = getattr(rule, "legal_name", None)
+        confidence = detected.confidence if detected else None
         sub_fields = detected.sub_fields if detected else {}
         evidence = detected.matched_text or detected.raw_text if detected else None
+        bounding_boxes = detected.bounding_boxes if detected else []
+        detected_value = detected.value if (detected and detected.found) else None
 
         if not image_usable:
             return ComplianceCheck(
                 field=field_name,
                 status=CheckStatus.REVIEW,
                 reason="Image quality is insufficient for a reliable automated field conclusion.",
+                detected_value=detected_value,
+                applicable_rule=ref,
                 rule_reference=ref,
+                rule_id=rule_id,
+                legal_name=legal_name,
+                confidence=confidence,
                 evidence=evidence,
+                bounding_boxes=bounding_boxes,
+                validation_result="LOW_IMAGE_QUALITY",
                 sub_fields=sub_fields,
             )
 
@@ -121,12 +144,19 @@ class ComplianceEngine:
                 field=field_name,
                 status=status,
                 reason=(
-                    f"{prefix}No reliable declaration detected on scanned panel. Manual verification recommended."
+                    f"{prefix}Declaration not visible or insufficient OCR evidence on photographed package surface. Manual verification recommended."
                     if status is CheckStatus.REVIEW
                     else f"{prefix}Required declaration determined to be absent from scanned panel."
                 ),
+                detected_value=None,
+                applicable_rule=ref,
                 rule_reference=ref,
-                evidence=evidence,
+                rule_id=rule_id,
+                legal_name=legal_name,
+                confidence=None,
+                evidence=None,
+                bounding_boxes=[],
+                validation_result="INSUFFICIENT_EVIDENCE",
                 sub_fields=sub_fields,
             )
 
@@ -136,8 +166,15 @@ class ComplianceEngine:
                 field=field_name,
                 status=CheckStatus.REVIEW,
                 reason=f"{ref or 'Rule 6(1)(d)'}: Expiry date detected ({detected.value}), but mandatory month & year of manufacture/pre-packing is missing.",
+                detected_value=detected_value,
+                applicable_rule=ref,
                 rule_reference=ref,
+                rule_id=rule_id,
+                legal_name=legal_name,
+                confidence=confidence,
                 evidence=evidence,
+                bounding_boxes=bounding_boxes,
+                validation_result="EXPIRY_ONLY",
                 sub_fields=sub_fields,
             )
 
@@ -150,19 +187,33 @@ class ComplianceEngine:
                     f"{prefix}Declaration detected with confidence {detected.confidence or 0:.2f}, below "
                     f"configured threshold of {getattr(rule, 'minimum_confidence'):.2f}."
                 ),
+                detected_value=detected_value,
+                applicable_rule=ref,
                 rule_reference=ref,
+                rule_id=rule_id,
+                legal_name=legal_name,
+                confidence=confidence,
                 evidence=evidence,
+                bounding_boxes=bounding_boxes,
+                validation_result="LOW_CONFIDENCE",
                 sub_fields=sub_fields,
             )
 
-        if not detected.value or not re.fullmatch(getattr(rule, "value_pattern"), detected.value, re.IGNORECASE):
+        if not detected.value or not re.fullmatch(getattr(rule, "value_pattern"), detected.value, re.IGNORECASE | re.DOTALL):
             prefix = f"{ref}: " if ref else ""
             return ComplianceCheck(
                 field=field_name,
                 status=CheckStatus.FAIL,
                 reason=f"{prefix}Detected declaration '{detected.value}' does not conform to statutory required format.",
+                detected_value=detected_value,
+                applicable_rule=ref,
                 rule_reference=ref,
+                rule_id=rule_id,
+                legal_name=legal_name,
+                confidence=confidence,
                 evidence=evidence,
+                bounding_boxes=bounding_boxes,
+                validation_result="INVALID_FORMAT",
                 sub_fields=sub_fields,
             )
 
@@ -176,8 +227,15 @@ class ComplianceEngine:
             field=field_name,
             status=CheckStatus.PASS,
             reason=reason,
+            detected_value=detected_value,
+            applicable_rule=ref,
             rule_reference=ref,
+            rule_id=rule_id,
+            legal_name=legal_name,
+            confidence=confidence,
             evidence=evidence,
+            bounding_boxes=bounding_boxes,
+            validation_result="VALID",
             sub_fields=sub_fields,
         )
 
@@ -194,7 +252,7 @@ class ComplianceEngine:
     def _build_summary(checks: list[ComplianceCheck]) -> str:
         statuses = {check.status for check in checks}
         if CheckStatus.FAIL in statuses:
-            return "One or more configured checks clearly failed. Review the evidence before taking action."
+            return "Screening result: NON_COMPLIANT based on detected declarations and configured rules. Review the evidence before taking action."
         if CheckStatus.REVIEW in statuses:
-            return "Manual verification is recommended because one or more declarations are unclear."
-        return "All declarations required by the active screening profile passed the configured checks."
+            return "Screening result: NEEDS_REVIEW. Manual verification is recommended because one or more declarations are unclear, unphotographed, or below confidence thresholds."
+        return "Screening result: COMPLIANT based on detected declarations and configured rules."

@@ -4,22 +4,28 @@ import { Camera, Sliders, Search, Cpu, ShieldCheck, FileCheck, CheckCircle, Load
 
 interface PipelineStepperProps {
   currentStageId: PipelineStageId;
-  progressPercent: number;
-  currentMessage: string;
+  progressPercent?: number;
+  progress?: number;
+  currentMessage?: string;
+  customMessage?: string;
 }
 
 export const PipelineStepper: React.FC<PipelineStepperProps> = ({
   currentStageId,
   progressPercent,
+  progress,
   currentMessage,
+  customMessage,
 }) => {
+  const actualProgress = progressPercent ?? progress ?? 0;
+  const actualMessage = currentMessage || customMessage || '';
   const stages: { id: PipelineStageId; name: string; tech: string; icon: any }[] = [
     { id: 'capture', name: 'Capture & Quality', tech: 'OpenCV Blur Check', icon: Camera },
     { id: 'preprocess', name: 'Preprocessing', tech: 'CLAHE & Deskew', icon: Sliders },
     { id: 'ocr', name: 'OCR Extraction', tech: 'EasyOCR / Tesseract', icon: Search },
     { id: 'field_id', name: 'Field Identification', tech: 'Regex Pattern Dict', icon: Cpu },
     { id: 'rule_engine', name: 'Rule Engine', tech: 'Rules 6, 7 & 8 (2011)', icon: ShieldCheck },
-    { id: 'result', name: 'Result Synthesis', tech: 'ReportLab & Overlay', icon: FileCheck },
+    { id: 'result', name: 'Result Synthesis', tech: 'Audit & Overlay', icon: FileCheck },
   ];
 
   const currentIdx = stages.findIndex((s) => s.id === currentStageId);
@@ -27,33 +33,33 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({
   return (
     <div
       id="pipeline-stepper-container"
-      className="bg-white rounded-2xl border border-slate-200 shadow-md p-6 max-w-4xl mx-auto my-6"
+      className="bg-[#FFFFFF] rounded-2xl border border-[#D1D5DB] shadow-xs p-6 max-w-4xl mx-auto my-6"
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-[#D1D5DB]">
         <div>
           <div className="flex items-center gap-2">
-            <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
-            <h3 className="text-base font-extrabold text-slate-900">
+            <Loader2 className="w-5 h-5 text-[#166534] animate-spin" />
+            <h3 className="text-base font-extrabold text-[#1F2937]">
               Executing Compliance Verification Pipeline
             </h3>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Streaming package through OpenCV preprocessing, OCR spatial extraction, and rule evaluation...
+          <p className="text-xs text-[#4B5563] mt-0.5">
+            Processing package image through optical preprocessing, OCR spatial extraction, and rule evaluation...
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
-            {progressPercent}% Complete
+          <span className="text-xs font-mono font-bold text-[#166534] bg-[#F0FDF4] px-3 py-1 rounded-full border border-[#BBF7D0]">
+            {actualProgress}% Complete
           </span>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-slate-100 rounded-full h-2.5 mb-6 overflow-hidden">
+      <div className="w-full bg-[#F7F8F5] rounded-full h-2 mb-6 overflow-hidden border border-[#D1D5DB]">
         <div
-          className="bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500 h-2.5 rounded-full transition-all duration-300 ease-out"
-          style={{ width: `${progressPercent}%` }}
+          className="bg-gradient-to-r from-[#166534] to-[#65A30D] h-2 rounded-full transition-all duration-300 ease-out"
+          style={{ width: `${actualProgress}%` }}
         ></div>
       </div>
 
@@ -67,47 +73,47 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({
           return (
             <div
               key={stage.id}
-              className={`p-3 rounded-xl border text-center transition-all duration-300 ${
+              className={`p-3 rounded-xl border text-center transition-all duration-200 ${
                 isCurrent
-                  ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-100 shadow-xs scale-102'
+                  ? 'bg-[#F0FDF4] border-[#166534] ring-1 ring-[#166534] shadow-xs'
                   : isDone
-                  ? 'bg-emerald-50/50 border-emerald-300'
-                  : 'bg-slate-50 border-slate-200 opacity-60'
+                  ? 'bg-[#F7F8F5] border-[#D1D5DB]'
+                  : 'bg-white border-[#D1D5DB] opacity-60'
               }`}
             >
               <div className="flex justify-center mb-1.5">
                 <div
                   className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                     isCurrent
-                      ? 'bg-blue-600 text-white animate-pulse'
+                      ? 'bg-[#166534] text-white animate-pulse'
                       : isDone
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-white text-slate-400 border border-slate-200'
+                      ? 'bg-[#65A30D] text-white'
+                      : 'bg-[#F7F8F5] text-[#6B7280] border border-[#D1D5DB]'
                   }`}
                 >
                   {isDone ? <CheckCircle className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
                 </div>
               </div>
 
-              <div className="text-[11px] font-bold text-slate-800 line-clamp-1">
+              <div className="text-[11px] font-bold text-[#1F2937] line-clamp-1">
                 {stage.name}
               </div>
-              <div className="text-[9px] font-mono text-slate-500 truncate mt-0.5">
+              <div className="text-[9px] font-mono text-[#6B7280] truncate mt-0.5">
                 {stage.tech}
               </div>
 
               <div className="mt-1.5">
                 {isDone ? (
-                  <span className="text-[9px] font-bold text-emerald-700 uppercase tracking-wider">
+                  <span className="text-[9px] font-bold text-[#15803D] uppercase tracking-wider">
                     Done ✓
                   </span>
                 ) : isCurrent ? (
-                  <span className="inline-flex items-center gap-1 text-[9px] font-bold text-blue-700 uppercase tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span>
+                  <span className="inline-flex items-center gap-1 text-[9px] font-bold text-[#166534] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#166534] animate-ping"></span>
                     Running
                   </span>
                 ) : (
-                  <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <span className="text-[9px] font-semibold text-[#6B7280] uppercase tracking-wider">
                     Pending
                   </span>
                 )}
@@ -118,16 +124,16 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({
       </div>
 
       {/* Real-time live log telemetry box */}
-      <div className="mt-6 bg-slate-950 rounded-xl p-3.5 border border-slate-800 font-mono text-xs">
-        <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+      <div className="mt-6 bg-[#1F2937] rounded-xl p-3.5 border border-[#111827] font-mono text-xs text-stone-200">
+        <div className="flex items-center justify-between text-[11px] text-stone-400 mb-1">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span className="w-2 h-2 rounded-full bg-[#15803D]"></span>
             PIPELINE TELEMETRY LOG
           </span>
-          <span className="text-slate-500">SIH26034 / v2.4</span>
+          <span className="text-stone-400">Rule 6 Engine / v2.4</span>
         </div>
-        <p className="text-emerald-400 text-xs truncate">
-          &gt; {currentMessage || 'Initializing PackScan AI inspection engine...'}
+        <p className="text-[#BBF7D0] text-xs truncate">
+          &gt; {actualMessage || 'Initializing PackScan.Ai inspection engine...'}
         </p>
       </div>
     </div>

@@ -28,7 +28,6 @@ class ContactDetector(BaseDetector):
             candidates = ocr_result.detections  # type: ignore
 
         context_match = None
-        fallback_match = None
 
         for item in candidates:
             text = getattr(item, "text", "")
@@ -53,11 +52,9 @@ class ContactDetector(BaseDetector):
             if has_context:
                 context_match = (item, extracted_val, sub_fields)
                 break
-            elif fallback_match is None:
-                fallback_match = (item, extracted_val, sub_fields)
 
-        # Also scan individual detections if nothing found in lines
-        if not context_match and not fallback_match:
+        # Also scan individual detections if grouping did not preserve the label/value pair.
+        if not context_match:
             for det in ocr_result.detections:
                 toll_free_val = first_match(self._toll_free, det.text)
                 phone_val = first_match(self._phone, det.text)
@@ -75,27 +72,22 @@ class ContactDetector(BaseDetector):
                     if self._context.search(det.text):
                         context_match = (det, extracted_val, sub)
                         break
-                    elif fallback_match is None:
-                        fallback_match = (det, extracted_val, sub)
 
-        selected = context_match or fallback_match
+        selected = context_match
         if selected:
             source, val, sub_fields = selected
             first_det = source.detections[0] if hasattr(source, "detections") else source
             box = source.bounding_box if hasattr(source, "bounding_box") else [first_det.bounding_box]
-            note = (
-                "Consumer care context and contact details detected."
-                if selected is context_match
-                else "Contact details detected without explicit consumer-care label."
-            )
+            note = "Consumer care context and contact details detected."
             return detected_field(
                 self.field_name,
                 first_det,
                 val,
                 note,
+                source_line=source,
                 raw_text=getattr(source, "raw_text", first_det.text),
                 normalized_text=getattr(source, "text", first_det.text),
-                matched_pattern="context_contact" if selected is context_match else "contact_fallback",
+                matched_pattern="context_contact",
                 sub_fields=sub_fields,
                 rule_reference="Rule 6(2)",
                 bounding_boxes=[box] if isinstance(box, tuple) else box,
@@ -103,6 +95,6 @@ class ContactDetector(BaseDetector):
 
         return DetectedField.not_found(
             self.field_name,
-            "No customer care phone number, toll-free helpline, or email address detected.",
+            "No contact detail tied to an explicit consumer-care or grievance context detected.",
             rule_reference="Rule 6(2)",
         )

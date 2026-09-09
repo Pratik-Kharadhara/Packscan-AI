@@ -4,11 +4,13 @@
   "fields": {
     "mrp": {
       "context_patterns": [
-        "\\bmrp\\b",
+        "\\bm\\.?r\\.?p\\.?\\b",
+        "\\br\\.?p\\.?\\b",
         "max(?:imum)?\\s+retail\\s+price",
-        "\\bretail\\s+price\\b"
+        "\\bretail\\s+price\\b",
+        "\\bincl[;:,.]*\\s*(?:of)?\\s*all\\s*tax"
       ],
-      "value_pattern": "(?:(?:mrp|max(?:imum)?\\s*retail\\s*price|retail\\s*price)[^0-9\\n]{0,10})?(?:[₹\\?]|rs\\.?|inr)?\\s*(\\d+(?:[.,]\\d{1,2})?)",
+      "value_pattern": "(?:(?:m\\.?r\\.?p\\.?|max(?:imum)?\\s*retail\\s*price|retail\\s*price|r\\.?p\\.?)[^0-9\\n]{0,10})?(?:[₹\\?<{]|rs\\.?|inr)?\\s*(\\d+(?:[.,]\\d{1,2})?)",
       "tax_pattern": "\\b(?:incl[;:,.]*|inclusive)\\s*(?:of)?\\s*all\\s*taxes\\b"
     },
     "net_quantity": {
@@ -20,10 +22,12 @@
     },
     "manufacture_date": {
       "mfg_context_patterns": [
+        "\\bda[tl]e\\s*of\\s*mfg\\b",
         "\\bdate\\s*of\\s*mfg\\b",
         "\\bmfg\\b",
         "\\bmfd\\b",
         "\\bmanufactured\\b",
+        "\\bda[tl]e\\s*of\\s*packa[tq]ing\\b",
         "\\bdate\\s*of\\s*packaging\\b",
         "\\bpkd\\b",
         "\\bpacked\\b",
@@ -40,11 +44,11 @@
     },
     "manufacturer_packer": {
       "marketer_patterns": [
-        "\\bmkt\\s*[.;:,]*\\s*by\\b",
+        "\\bmk[ti]\\s*[.;:,]*\\s*by\\b",
         "\\bmarketed\\s*by\\b"
       ],
       "manufacturer_patterns": [
-        "\\bmfg\\s*[.;:,]*\\s*by\\b",
+        "\\bm[fl]g\\s*[.;:,]*\\s*by\\b",
         "\\bmanufactured\\s*by\\b",
         "\\bmanufacturer\\b"
       ],
@@ -75,9 +79,17 @@
     },
     "product_identity": {
       "context_patterns": [
-        "product\\s*(?:name)?",
-        "commodity",
-        "item\\s*(?:name)?"
+        "\\bproduct\\b(?:\\s+name)?\\s*[:=-]",
+        "\\bcommodity\\b(?:\\s+name)?\\s*[:=-]",
+        "\\bitem\\b(?:\\s+name)?\\s*[:=-]"
+      ],
+      "generic_section_patterns": [
+        "\\bconsumer\\s+care\\b",
+        "\\bcustomer\\s+care\\b",
+        "\\btoll\\s*free\\b",
+        "\\b(?:mfg|mkt|marketed|manufactured|packed|pkd|imported)\\s+by\\b",
+        "\\b(?:mrp|net\\s+(?:qty|quantity|weight)|date\\s+of)\\b",
+        "\\b(?:barcode|ingredients?|nutrition(?:al)? facts?)\\b"
       ],
       "common_commodities": [
         "salt",
@@ -97,7 +109,16 @@
         "oil",
         "edible oil",
         "scrub",
-        "face wash"
+        "face wash",
+        "spices",
+        "spice",
+        "masala",
+        "powder",
+        "turmeric",
+        "chilli",
+        "coriander",
+        "pulses",
+        "dal"
       ]
     }
   }

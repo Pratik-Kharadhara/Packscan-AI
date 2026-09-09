@@ -370,16 +370,16 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
 
   return (
     <div className="w-full max-w-5xl mx-auto" id="upload-zone-root">
-      {/* Quick Demo Presets Banner */}
-      <div className="mb-6 bg-blue-50/80 border border-blue-200 rounded-2xl p-4 sm:p-5">
+      {/* Verified Reference Test Presets Banner */}
+      <div className="mb-6 bg-[#F0FDF4] border border-[#BBF7D0] rounded-2xl p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-blue-600" />
-            <span className="text-xs sm:text-sm font-extrabold text-blue-950 uppercase tracking-wide">
-              Instant Hackathon Demo Presets (1-Click Test)
+            <Sparkles className="w-4 h-4 text-[#166534]" />
+            <span className="text-xs sm:text-sm font-extrabold text-[#166534] uppercase tracking-wide">
+              Reference Evaluation Test Cases (1-Click Test)
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-blue-700">
+          <span className="text-[11px] font-semibold text-[#166534]/80">
             Legal Metrology (Packaged Commodities) Rules, 2011
           </span>
         </div>
@@ -393,10 +393,10 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                 type="button"
                 key={preset.id}
                 onClick={() => handlePresetSelect(preset.id)}
-                className={`text-left p-3 rounded-xl border transition-all duration-200 ${
+                className={`text-left p-3 rounded-xl border transition-all duration-150 ${
                   isSelected
-                    ? 'bg-white border-blue-600 shadow-sm ring-2 ring-blue-500/20'
-                    : 'bg-white/80 hover:bg-white border-blue-100 hover:border-blue-300'
+                    ? 'bg-white border-[#166534] shadow-xs ring-1 ring-[#166534]'
+                    : 'bg-white/90 hover:bg-white border-[#D1D5DB] hover:border-[#166534]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -405,12 +405,12 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                   >
                     {preset.badge.replace('_', ' ')}
                   </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <ChevronRight className="w-3.5 h-3.5 text-[#6B7280]" />
                 </div>
-                <div className="text-xs font-bold text-slate-900 line-clamp-1">
+                <div className="text-xs font-bold text-[#1F2937] line-clamp-1">
                   {preset.label}
                 </div>
-                <div className="text-[10px] text-slate-500 line-clamp-2 mt-0.5">
+                <div className="text-[10px] text-[#4B5563] line-clamp-2 mt-0.5">
                   {preset.sub}
                 </div>
               </button>
@@ -419,34 +419,34 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
         </div>
 
         {/* Multi-Image Quick Presets */}
-        <div className="pt-2 border-t border-blue-200/60 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-[11px] font-bold text-blue-900 flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-blue-600" />
-            Multi-Image Presets:
+        <div className="pt-2 border-t border-[#BBF7D0] flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[11px] font-bold text-[#166534] flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-[#166534]" />
+            Multi-Image Evaluation Presets:
           </span>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={handleMultiAngleDemoPreset}
-              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all flex items-center gap-1.5"
+              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-[#166534] hover:bg-[#14532D] text-white shadow-2xs transition-all flex items-center gap-1.5"
             >
               <Layers className="w-3 h-3" />
-              <span>Multi-Angle Demo (Front + Back + Side)</span>
+              <span>Multi-Angle Specimen (Front + Back + Side)</span>
             </button>
             <button
               type="button"
               onClick={handleBatchDemoPreset}
-              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white shadow-xs transition-all flex items-center gap-1.5"
+              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-[#65A30D] hover:bg-[#4D7C0F] text-white shadow-2xs transition-all flex items-center gap-1.5"
             >
               <ListOrdered className="w-3 h-3" />
-              <span>Batch Screening Demo (3 Packages)</span>
+              <span>Batch Queue Specimen (3 Packages)</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Main Upload / Multi-Image Management Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+      <div className="bg-white rounded-2xl border border-[#D1D5DB] shadow-2xs p-6 sm:p-8">
         {/* If Camera is active */}
         {cameraActive ? (
           <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 mb-6">
@@ -472,7 +472,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
               <button
                 type="button"
                 onClick={capturePhoto}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-full shadow-lg flex items-center gap-2 text-xs transition-transform active:scale-95"
+                className="bg-[#166534] hover:bg-[#14532D] text-white font-bold px-5 py-2.5 rounded-full shadow-md flex items-center gap-2 text-xs transition-transform active:scale-95"
               >
                 <Camera className="w-4 h-4" />
                 Capture Photo {cameraPhotoCount + 1}
@@ -480,7 +480,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
               <button
                 type="button"
                 onClick={stopCamera}
-                className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-full text-xs"
+                className="bg-[#1F2937] hover:bg-stone-800 text-white font-bold px-4 py-2.5 rounded-full text-xs"
               >
                 {cameraPhotoCount > 0 ? 'Done Adding' : 'Cancel'}
               </button>
@@ -492,16 +492,16 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
         {imageList.length > 0 ? (
           <div className="mb-6 space-y-4">
             {/* Gallery Top Action Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F7F8F5] p-3.5 rounded-xl border border-[#D1D5DB]">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+                <div className="w-7 h-7 rounded-lg bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] flex items-center justify-center font-bold text-xs">
                   {imageList.length}
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-900">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-[#1F2937]">
                     {imageList.length === 1 ? '1 Image Attached' : `${imageList.length} Images Attached`}
                   </h4>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-[#4B5563]">
                     {imageList.length === 1
                       ? 'You can add more angles to scan front, back, and MRP stamp together.'
                       : 'Multiple angles detected. Select workflow below.'}
@@ -513,25 +513,25 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs"
+                  className="bg-white hover:bg-stone-50 text-[#1F2937] border border-[#D1D5DB] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs"
                 >
-                  <Plus className="w-3.5 h-3.5 text-blue-600" />
+                  <Plus className="w-3.5 h-3.5 text-[#166534]" />
                   <span>Add More Images</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={startCamera}
-                  className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs"
+                  className="bg-white hover:bg-stone-50 text-[#1F2937] border border-[#D1D5DB] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs"
                 >
-                  <Camera className="w-3.5 h-3.5 text-slate-600" />
+                  <Camera className="w-3.5 h-3.5 text-[#4B5563]" />
                   <span>Camera</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={clearAllImages}
-                  className="text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1 transition-colors"
+                  className="text-xs text-[#B91C1C] hover:text-red-800 hover:bg-red-50 px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1 transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Clear All</span>
@@ -544,18 +544,18 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
               {imageList.map((img, index) => (
                 <div
                   key={img.id}
-                  className="group relative rounded-xl border border-slate-200 bg-slate-50/70 overflow-hidden shadow-2xs hover:shadow-sm transition-all flex flex-col"
+                  className="group relative rounded-xl border border-[#D1D5DB] bg-white overflow-hidden shadow-2xs hover:border-[#166534] transition-all flex flex-col"
                 >
                   {/* Image Preview */}
-                  <div className="relative h-44 bg-slate-900/10 flex items-center justify-center overflow-hidden p-2">
+                  <div className="relative h-44 bg-[#F7F8F5] flex items-center justify-center overflow-hidden p-2">
                     <img
                       src={img.previewUrl}
                       alt={img.name}
-                      className="h-full w-auto object-contain rounded-md shadow-2xs group-hover:scale-[1.02] transition-transform duration-200"
+                      className="h-full w-auto object-contain rounded-md group-hover:scale-[1.02] transition-transform duration-200"
                     />
 
                     {/* Badge index */}
-                    <div className="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white px-2 py-0.5 rounded text-[10px] font-bold">
+                    <div className="absolute top-2 left-2 bg-[#1F2937]/90 text-white px-2 py-0.5 rounded text-[10px] font-bold">
                       #{index + 1}
                     </div>
 
@@ -564,30 +564,30 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                       type="button"
                       onClick={() => removeImage(img.id)}
                       title="Remove image"
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/70 hover:bg-rose-600 text-white transition-colors"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-[#1F2937]/70 hover:bg-[#B91C1C] text-white transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Card Details & Surface Selector */}
-                  <div className="p-3 bg-white flex-1 flex flex-col justify-between border-t border-slate-200">
+                  <div className="p-3 bg-white flex-1 flex flex-col justify-between border-t border-[#D1D5DB]">
                     <div className="mb-2">
-                      <div className="text-xs font-bold text-slate-800 truncate" title={img.name}>
+                      <div className="text-xs font-bold text-[#1F2937] truncate" title={img.name}>
                         {img.name}
                       </div>
-                      <div className="text-[10px] text-slate-400">{img.sizeStr}</div>
+                      <div className="text-[10px] text-[#6B7280]">{img.sizeStr}</div>
                     </div>
 
                     {/* Surface / Panel Tag */}
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                      <label className="block text-[10px] font-bold text-[#4B5563] uppercase tracking-wide mb-1">
                         Package Surface / Angle:
                       </label>
                       <select
                         value={img.panelLabel}
                         onChange={(e) => updatePanelLabel(img.id, e.target.value)}
-                        className="w-full text-xs font-semibold px-2 py-1.5 rounded-lg border border-slate-300 bg-slate-50 focus:bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full text-xs font-semibold px-2 py-1.5 rounded-lg border border-[#D1D5DB] bg-[#F7F8F5] focus:bg-white text-[#1F2937] focus:outline-none focus:ring-1 focus:ring-[#166534] focus:border-[#166534]"
                       >
                         {PANEL_PRESETS.map((preset) => (
                           <option key={preset} value={preset}>
@@ -603,13 +603,13 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
 
             {/* Mode Selector Card (when 2 or more images are selected) */}
             {imageList.length > 1 && (
-              <div className="mt-4 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+              <div className="mt-4 p-4 rounded-xl border border-[#D1D5DB] bg-[#F7F8F5]">
                 <div className="flex items-center justify-between mb-2.5">
-                  <div className="text-xs font-extrabold uppercase tracking-wider text-blue-950 flex items-center gap-1.5">
-                    <Layers className="w-4 h-4 text-blue-600" />
+                  <div className="text-xs font-extrabold uppercase tracking-wider text-[#1F2937] flex items-center gap-1.5">
+                    <Layers className="w-4 h-4 text-[#166534]" />
                     <span>Choose Multi-Image Scanning Workflow:</span>
                   </div>
-                  <span className="text-[11px] text-blue-700 font-semibold">
+                  <span className="text-[11px] text-[#166534] font-semibold">
                     {imageList.length} files selected
                   </span>
                 </div>
@@ -620,20 +620,20 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                     onClick={() => setScanMode('multi_angle')}
                     className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                       scanMode === 'multi_angle'
-                        ? 'bg-white border-blue-600 shadow-sm ring-2 ring-blue-500/20'
-                        : 'bg-white/80 hover:bg-white border-slate-200'
+                        ? 'bg-white border-[#166534] shadow-xs ring-1 ring-[#166534]'
+                        : 'bg-white/90 hover:bg-white border-[#D1D5DB]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
-                        <Layers className="w-3.5 h-3.5 text-blue-600" />
+                      <div className="font-extrabold text-xs text-[#1F2937] flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-[#166534]" />
                         Multi-Angle Package Scan
                       </div>
-                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-[#F0FDF4] text-[#166534] px-2 py-0.5 rounded-full border border-[#BBF7D0]">
                         Recommended
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                    <p className="text-[11px] text-[#4B5563] leading-relaxed">
                       For <strong>1 product</strong> with multiple sides (Front, Back, Side).
                       Consolidates declarations from all panels into a unified audit.
                     </p>
@@ -644,20 +644,20 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                     onClick={() => setScanMode('batch')}
                     className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                       scanMode === 'batch'
-                        ? 'bg-white border-blue-600 shadow-sm ring-2 ring-blue-500/20'
-                        : 'bg-white/80 hover:bg-white border-slate-200'
+                        ? 'bg-white border-[#166534] shadow-xs ring-1 ring-[#166534]'
+                        : 'bg-white/90 hover:bg-white border-[#D1D5DB]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
-                        <ListOrdered className="w-3.5 h-3.5 text-purple-600" />
+                      <div className="font-extrabold text-xs text-[#1F2937] flex items-center gap-1.5">
+                        <ListOrdered className="w-3.5 h-3.5 text-[#65A30D]" />
                         Batch Package Screening
                       </div>
-                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full border border-purple-300">
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-[#F7F8F5] text-[#1F2937] px-2 py-0.5 rounded-full border border-[#D1D5DB]">
                         Queue Mode
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                    <p className="text-[11px] text-[#4B5563] leading-relaxed">
                       For <strong>{imageList.length} different products</strong>. Runs sequential
                       screenings and generates individual audit records for each.
                     </p>
@@ -670,30 +670,30 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
           /* Single Preset Selection Preview */
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <div className="flex items-center gap-2 text-xs font-bold text-[#1F2937]">
+                <CheckCircle2 className="w-4 h-4 text-[#15803D]" />
                 <span>Standard Test Specimen Loaded</span>
               </div>
               <button
                 type="button"
                 onClick={clearAllImages}
-                className="text-xs text-slate-500 hover:text-rose-600 flex items-center gap-1 font-semibold"
+                className="text-xs text-[#4B5563] hover:text-[#B91C1C] flex items-center gap-1 font-semibold"
               >
                 <X className="w-3.5 h-3.5" />
                 Change Specimen
               </button>
             </div>
 
-            <div className="relative rounded-xl border border-slate-200 bg-slate-900/5 overflow-hidden max-h-96 flex items-center justify-center p-3">
+            <div className="relative rounded-xl border border-[#D1D5DB] bg-[#F7F8F5] overflow-hidden max-h-96 flex items-center justify-center p-3">
               <img
                 src={
                   singlePresets.find((p) => p.id === selectedPresetId)?.data.imageUrl
                 }
                 alt="Selected preset"
-                className="max-h-80 w-auto rounded-lg object-contain shadow-xs"
+                className="max-h-80 w-auto rounded-lg object-contain shadow-2xs"
               />
-              <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-xs text-white px-3 py-1 rounded-md text-[11px] font-bold">
-                Preset: {selectedPresetId.toUpperCase().replace('_', ' ')}
+              <div className="absolute top-4 left-4 bg-[#1F2937]/90 text-white px-3 py-1 rounded-md text-[11px] font-bold">
+                Specimen: {selectedPresetId.toUpperCase().replace('_', ' ')}
               </div>
             </div>
           </div>
@@ -704,20 +704,20 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-200 mb-6 ${
+            className={`border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-150 mb-6 ${
               isDragging
-                ? 'border-blue-600 bg-blue-50/50 scale-[1.01]'
-                : 'border-slate-300 hover:border-blue-500 hover:bg-slate-50/70'
+                ? 'border-[#166534] bg-[#F0FDF4] scale-[1.01]'
+                : 'border-[#D1D5DB] hover:border-[#166534] hover:bg-[#F7F8F5]'
             }`}
           >
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center mb-4 border border-blue-100 shadow-2xs">
-              <Upload className="w-8 h-8" />
+            <div className="w-14 h-14 rounded-2xl bg-[#F0FDF4] text-[#166534] mx-auto flex items-center justify-center mb-4 border border-[#BBF7D0] shadow-2xs">
+              <Upload className="w-7 h-7" />
             </div>
 
-            <h4 className="text-base sm:text-lg font-extrabold text-slate-900 mb-1">
+            <h4 className="text-base sm:text-lg font-extrabold text-[#1F2937] mb-1">
               Upload Package Commodity Label(s)
             </h4>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-4">
+            <p className="text-xs sm:text-sm text-[#4B5563] max-w-md mx-auto mb-4">
               <strong>Upload single or multiple images at once</strong> (e.g. Front, Back &amp; Side
               panels, or multiple packaged products). Drag and drop or browse from device.
             </p>
@@ -729,7 +729,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+                className="bg-[#166534] hover:bg-[#14532D] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5"
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>Select Image(s)</span>
@@ -741,14 +741,14 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                   e.stopPropagation();
                   startCamera();
                 }}
-                className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+                className="bg-white hover:bg-stone-50 text-[#1F2937] border border-[#D1D5DB] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
               >
-                <Camera className="w-3.5 h-3.5 text-slate-500" />
+                <Camera className="w-3.5 h-3.5 text-[#4B5563]" />
                 Use Camera
               </button>
             </div>
 
-            <p className="text-[11px] text-slate-400 mt-4">
+            <p className="text-[11px] text-[#6B7280] mt-4">
               Tip: You can select multiple files at once in the file picker dialog.
             </p>
           </div>
@@ -772,7 +772,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">
                 {scanMode === 'batch' && imageList.length > 1
                   ? 'Batch Inspection Name'
                   : 'Product Generic Name / Title'}
@@ -782,18 +782,18 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
                 placeholder="e.g. Whole Wheat Flour / Face Cream"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#D1D5DB] text-xs text-[#1F2937] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 focus:ring-[#166534] focus:border-[#166534]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">
                 Commodity Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#D1D5DB] text-xs text-[#1F2937] focus:outline-none focus:ring-1 focus:ring-[#166534] focus:border-[#166534] bg-white"
               >
                 <option value="Food & Beverages">Food &amp; Beverages (Packaged Foods, Spices, Grains)</option>
                 <option value="Personal Care">Personal Care (Cosmetics, Creams, Soaps)</option>
@@ -804,16 +804,16 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
           </div>
 
           {/* Verification Scope Checklist notice */}
-          <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-slate-600 text-xs flex items-center justify-between">
+          <div className="bg-[#F7F8F5] rounded-xl p-3 border border-[#D1D5DB] text-[#4B5563] text-xs flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-[#166534] shrink-0" />
               <span>
                 Engine verifies: <strong>Manufacturer</strong>, <strong>Commodity</strong>,{' '}
                 <strong>Net Qty</strong>, <strong>Mfg Date</strong>, <strong>MRP</strong>, and{' '}
                 <strong>Consumer Grievance</strong>.
               </span>
             </div>
-            <span className="text-[10px] text-slate-400 font-mono hidden md:inline">
+            <span className="text-[10px] text-[#6B7280] font-mono hidden md:inline">
               Rule 6(1) PCR 2011
             </span>
           </div>
@@ -824,13 +824,13 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onStartAnalysis, isAnaly
               id="analyze-package-btn"
               type="submit"
               disabled={(imageList.length === 0 && !selectedPresetId) || isAnalyzing}
-              className={`w-full py-3.5 px-6 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-md transition-all ${
+              className={`w-full py-3.5 px-6 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-xs transition-all ${
                 (imageList.length === 0 && !selectedPresetId) || isAnalyzing
-                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/25 hover:shadow-lg active:scale-[0.99]'
+                  ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  : 'bg-[#166534] hover:bg-[#14532D] text-white shadow-xs active:scale-[0.99]'
               }`}
             >
-              <Zap className="w-4 h-4 text-blue-200" />
+              <Zap className="w-4 h-4 text-[#BBF7D0]" />
               <span>
                 {isAnalyzing
                   ? 'Running Verification Pipeline...'
