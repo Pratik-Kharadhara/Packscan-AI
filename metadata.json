@@ -1,6 +1,0 @@
-{
-  "name": "PackScan AI - Legal Metrology Compliance Screening",
-  "description": "Enterprise-grade automated package label compliance screening against Legal Metrology (Packaged Commodities) Rules.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
